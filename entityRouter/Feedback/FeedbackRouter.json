@@ -1,0 +1,23 @@
+{
+  path: '/feedback',
+  icon: 'feedback',
+  name: 'feedback',
+  routes: [
+    {
+      path: '/feedback/feedbackList',
+      name: 'feedbackList',
+      component: './Feedback/FeedbackList'
+    },
+    {
+      path: '/feedback/feedbackForm/',
+      name: 'feedbackForm',
+      component: './Feedback/FeedbackForm'
+    },
+    {
+      path: '/feedback/feedbackForm/:feedbackId',
+      hideInMenu: true,
+      name: 'feedbackForm',
+      component: './Feedback/FeedbackForm'
+    }
+  ]
+}

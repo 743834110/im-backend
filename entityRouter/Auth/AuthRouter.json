@@ -1,0 +1,23 @@
+{
+  path: '/auth',
+  icon: 'auth',
+  name: 'auth',
+  routes: [
+    {
+      path: '/auth/authList',
+      name: 'authList',
+      component: './Auth/AuthList'
+    },
+    {
+      path: '/auth/authForm/',
+      name: 'authForm',
+      component: './Auth/AuthForm'
+    },
+    {
+      path: '/auth/authForm/:authId',
+      hideInMenu: true,
+      name: 'authForm',
+      component: './Auth/AuthForm'
+    }
+  ]
+}

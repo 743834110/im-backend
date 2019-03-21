@@ -1,0 +1,23 @@
+{
+  path: '/role',
+  icon: 'role',
+  name: 'role',
+  routes: [
+    {
+      path: '/role/roleList',
+      name: 'roleList',
+      component: './Role/RoleList'
+    },
+    {
+      path: '/role/roleForm/',
+      name: 'roleForm',
+      component: './Role/RoleForm'
+    },
+    {
+      path: '/role/roleForm/:roleId',
+      hideInMenu: true,
+      name: 'roleForm',
+      component: './Role/RoleForm'
+    }
+  ]
+}

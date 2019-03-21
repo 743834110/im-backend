@@ -1,0 +1,23 @@
+{
+  path: '/workGroupMember',
+  icon: 'workGroupMember',
+  name: 'workGroupMember',
+  routes: [
+    {
+      path: '/workGroupMember/workGroupMemberList',
+      name: 'workGroupMemberList',
+      component: './WorkGroupMember/WorkGroupMemberList'
+    },
+    {
+      path: '/workGroupMember/workGroupMemberForm/',
+      name: 'workGroupMemberForm',
+      component: './WorkGroupMember/WorkGroupMemberForm'
+    },
+    {
+      path: '/workGroupMember/workGroupMemberForm/:memberId',
+      hideInMenu: true,
+      name: 'workGroupMemberForm',
+      component: './WorkGroupMember/WorkGroupMemberForm'
+    }
+  ]
+}

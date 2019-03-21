@@ -1,0 +1,23 @@
+{
+  path: '/file',
+  icon: 'file',
+  name: 'file',
+  routes: [
+    {
+      path: '/file/fileList',
+      name: 'fileList',
+      component: './File/FileList'
+    },
+    {
+      path: '/file/fileForm/',
+      name: 'fileForm',
+      component: './File/FileForm'
+    },
+    {
+      path: '/file/fileForm/:fileId',
+      hideInMenu: true,
+      name: 'fileForm',
+      component: './File/FileForm'
+    }
+  ]
+}

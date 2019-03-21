@@ -1,0 +1,23 @@
+{
+  path: '/userOrgRole',
+  icon: 'userOrgRole',
+  name: 'userOrgRole',
+  routes: [
+    {
+      path: '/userOrgRole/userOrgRoleList',
+      name: 'userOrgRoleList',
+      component: './UserOrgRole/UserOrgRoleList'
+    },
+    {
+      path: '/userOrgRole/userOrgRoleForm/',
+      name: 'userOrgRoleForm',
+      component: './UserOrgRole/UserOrgRoleForm'
+    },
+    {
+      path: '/userOrgRole/userOrgRoleForm/:userOrgRoleId',
+      hideInMenu: true,
+      name: 'userOrgRoleForm',
+      component: './UserOrgRole/UserOrgRoleForm'
+    }
+  ]
+}

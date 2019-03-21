@@ -1,0 +1,23 @@
+{
+  path: '/organization',
+  icon: 'organization',
+  name: 'organization',
+  routes: [
+    {
+      path: '/organization/organizationList',
+      name: 'organizationList',
+      component: './Organization/OrganizationList'
+    },
+    {
+      path: '/organization/organizationForm/',
+      name: 'organizationForm',
+      component: './Organization/OrganizationForm'
+    },
+    {
+      path: '/organization/organizationForm/:orgId',
+      hideInMenu: true,
+      name: 'organizationForm',
+      component: './Organization/OrganizationForm'
+    }
+  ]
+}

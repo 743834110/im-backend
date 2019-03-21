@@ -1,0 +1,23 @@
+{
+  path: '/message',
+  icon: 'message',
+  name: 'message',
+  routes: [
+    {
+      path: '/message/messageList',
+      name: 'messageList',
+      component: './Message/MessageList'
+    },
+    {
+      path: '/message/messageForm/',
+      name: 'messageForm',
+      component: './Message/MessageForm'
+    },
+    {
+      path: '/message/messageForm/:id',
+      hideInMenu: true,
+      name: 'messageForm',
+      component: './Message/MessageForm'
+    }
+  ]
+}

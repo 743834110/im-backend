@@ -1,0 +1,23 @@
+{
+  path: '/routine',
+  icon: 'routine',
+  name: 'routine',
+  routes: [
+    {
+      path: '/routine/routineList',
+      name: 'routineList',
+      component: './Routine/RoutineList'
+    },
+    {
+      path: '/routine/routineForm/',
+      name: 'routineForm',
+      component: './Routine/RoutineForm'
+    },
+    {
+      path: '/routine/routineForm/:routineId',
+      hideInMenu: true,
+      name: 'routineForm',
+      component: './Routine/RoutineForm'
+    }
+  ]
+}

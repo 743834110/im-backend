@@ -1,0 +1,23 @@
+{
+  path: '/userLoginLog',
+  icon: 'userLoginLog',
+  name: 'userLoginLog',
+  routes: [
+    {
+      path: '/userLoginLog/userLoginLogList',
+      name: 'userLoginLogList',
+      component: './UserLoginLog/UserLoginLogList'
+    },
+    {
+      path: '/userLoginLog/userLoginLogForm/',
+      name: 'userLoginLogForm',
+      component: './UserLoginLog/UserLoginLogForm'
+    },
+    {
+      path: '/userLoginLog/userLoginLogForm/:loginLogId',
+      hideInMenu: true,
+      name: 'userLoginLogForm',
+      component: './UserLoginLog/UserLoginLogForm'
+    }
+  ]
+}

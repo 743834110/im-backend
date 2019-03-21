@@ -1,0 +1,23 @@
+{
+  path: '/roleAuth',
+  icon: 'roleAuth',
+  name: 'roleAuth',
+  routes: [
+    {
+      path: '/roleAuth/roleAuthList',
+      name: 'roleAuthList',
+      component: './RoleAuth/RoleAuthList'
+    },
+    {
+      path: '/roleAuth/roleAuthForm/',
+      name: 'roleAuthForm',
+      component: './RoleAuth/RoleAuthForm'
+    },
+    {
+      path: '/roleAuth/roleAuthForm/:roleAuthId',
+      hideInMenu: true,
+      name: 'roleAuthForm',
+      component: './RoleAuth/RoleAuthForm'
+    }
+  ]
+}

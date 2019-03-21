@@ -1,0 +1,23 @@
+{
+  path: '/discussion',
+  icon: 'discussion',
+  name: 'discussion',
+  routes: [
+    {
+      path: '/discussion/discussionList',
+      name: 'discussionList',
+      component: './Discussion/DiscussionList'
+    },
+    {
+      path: '/discussion/discussionForm/',
+      name: 'discussionForm',
+      component: './Discussion/DiscussionForm'
+    },
+    {
+      path: '/discussion/discussionForm/:discussionId',
+      hideInMenu: true,
+      name: 'discussionForm',
+      component: './Discussion/DiscussionForm'
+    }
+  ]
+}

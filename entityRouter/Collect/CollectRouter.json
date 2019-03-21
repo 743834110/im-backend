@@ -1,0 +1,23 @@
+{
+  path: '/collect',
+  icon: 'collect',
+  name: 'collect',
+  routes: [
+    {
+      path: '/collect/collectList',
+      name: 'collectList',
+      component: './Collect/CollectList'
+    },
+    {
+      path: '/collect/collectForm/',
+      name: 'collectForm',
+      component: './Collect/CollectForm'
+    },
+    {
+      path: '/collect/collectForm/:collectionId',
+      hideInMenu: true,
+      name: 'collectForm',
+      component: './Collect/CollectForm'
+    }
+  ]
+}

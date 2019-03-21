@@ -1,0 +1,23 @@
+{
+  path: '/userOrg',
+  icon: 'userOrg',
+  name: 'userOrg',
+  routes: [
+    {
+      path: '/userOrg/userOrgList',
+      name: 'userOrgList',
+      component: './UserOrg/UserOrgList'
+    },
+    {
+      path: '/userOrg/userOrgForm/',
+      name: 'userOrgForm',
+      component: './UserOrg/UserOrgForm'
+    },
+    {
+      path: '/userOrg/userOrgForm/:userOrgId',
+      hideInMenu: true,
+      name: 'userOrgForm',
+      component: './UserOrg/UserOrgForm'
+    }
+  ]
+}

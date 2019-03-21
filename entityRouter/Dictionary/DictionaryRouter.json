@@ -1,0 +1,23 @@
+{
+  path: '/dictionary',
+  icon: 'dictionary',
+  name: 'dictionary',
+  routes: [
+    {
+      path: '/dictionary/dictionaryList',
+      name: 'dictionaryList',
+      component: './Dictionary/DictionaryList'
+    },
+    {
+      path: '/dictionary/dictionaryForm/',
+      name: 'dictionaryForm',
+      component: './Dictionary/DictionaryForm'
+    },
+    {
+      path: '/dictionary/dictionaryForm/:dictionaryId',
+      hideInMenu: true,
+      name: 'dictionaryForm',
+      component: './Dictionary/DictionaryForm'
+    }
+  ]
+}

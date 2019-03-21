@@ -1,0 +1,23 @@
+{
+  path: '/user',
+  icon: 'user',
+  name: 'user',
+  routes: [
+    {
+      path: '/user/userList',
+      name: 'userList',
+      component: './User/UserList'
+    },
+    {
+      path: '/user/userForm/',
+      name: 'userForm',
+      component: './User/UserForm'
+    },
+    {
+      path: '/user/userForm/:userId',
+      hideInMenu: true,
+      name: 'userForm',
+      component: './User/UserForm'
+    }
+  ]
+}

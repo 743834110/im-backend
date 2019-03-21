@@ -1,0 +1,23 @@
+{
+  path: '/serverConfig',
+  icon: 'serverConfig',
+  name: 'serverConfig',
+  routes: [
+    {
+      path: '/serverConfig/serverConfigList',
+      name: 'serverConfigList',
+      component: './ServerConfig/ServerConfigList'
+    },
+    {
+      path: '/serverConfig/serverConfigForm/',
+      name: 'serverConfigForm',
+      component: './ServerConfig/ServerConfigForm'
+    },
+    {
+      path: '/serverConfig/serverConfigForm/:configId',
+      hideInMenu: true,
+      name: 'serverConfigForm',
+      component: './ServerConfig/ServerConfigForm'
+    }
+  ]
+}

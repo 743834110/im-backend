@@ -1,0 +1,23 @@
+{
+  path: '/chatGroup',
+  icon: 'chatGroup',
+  name: 'chatGroup',
+  routes: [
+    {
+      path: '/chatGroup/chatGroupList',
+      name: 'chatGroupList',
+      component: './ChatGroup/ChatGroupList'
+    },
+    {
+      path: '/chatGroup/chatGroupForm/',
+      name: 'chatGroupForm',
+      component: './ChatGroup/ChatGroupForm'
+    },
+    {
+      path: '/chatGroup/chatGroupForm/:groupId',
+      hideInMenu: true,
+      name: 'chatGroupForm',
+      component: './ChatGroup/ChatGroupForm'
+    }
+  ]
+}

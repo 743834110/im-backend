@@ -1,0 +1,23 @@
+{
+  path: '/dictionaryType',
+  icon: 'dictionaryType',
+  name: 'dictionaryType',
+  routes: [
+    {
+      path: '/dictionaryType/dictionaryTypeList',
+      name: 'dictionaryTypeList',
+      component: './DictionaryType/DictionaryTypeList'
+    },
+    {
+      path: '/dictionaryType/dictionaryTypeForm/',
+      name: 'dictionaryTypeForm',
+      component: './DictionaryType/DictionaryTypeForm'
+    },
+    {
+      path: '/dictionaryType/dictionaryTypeForm/:codeItemId',
+      hideInMenu: true,
+      name: 'dictionaryTypeForm',
+      component: './DictionaryType/DictionaryTypeForm'
+    }
+  ]
+}

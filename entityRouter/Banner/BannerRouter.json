@@ -1,0 +1,23 @@
+{
+  path: '/banner',
+  icon: 'banner',
+  name: 'banner',
+  routes: [
+    {
+      path: '/banner/bannerList',
+      name: 'bannerList',
+      component: './Banner/BannerList'
+    },
+    {
+      path: '/banner/bannerForm/',
+      name: 'bannerForm',
+      component: './Banner/BannerForm'
+    },
+    {
+      path: '/banner/bannerForm/:bannerId',
+      hideInMenu: true,
+      name: 'bannerForm',
+      component: './Banner/BannerForm'
+    }
+  ]
+}
