@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -16,6 +18,9 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import SelectDictionary from "../Dictionary/SelectDictionary";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -72,6 +77,12 @@ class RoutineForm extends PureComponent {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
@@ -83,17 +94,75 @@ class RoutineForm extends PureComponent {
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
+
+  /**
+   * 处理日常活动类型点击事件
+   */
+  handleRoutineTypeClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'routineType': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('routineType');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'ROUTINE', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };
+
+  /**
+   * 处理可见范围点击事件
+   */
+  handleVisibilityClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'visibility': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('visibility');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'ROUTINE_ACCESS_CLASS', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };
 
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
-      submitting
-      , _routine: {
+       _routine: {
         object = {}
       }
     } = this.props;
     const {
+      submitting,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
@@ -145,7 +214,7 @@ class RoutineForm extends PureComponent {
               {
                 getFieldDecorator('routineType', {
                   initialValue: object.routineType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleRoutineTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='日常活动内容'>
@@ -158,8 +227,8 @@ class RoutineForm extends PureComponent {
             <FormItem {...formItemLayout} label='创建时间'>
               {
                 getFieldDecorator('createTime', {
-                  initialValue: object.createTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.createTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户类型'>
@@ -179,8 +248,8 @@ class RoutineForm extends PureComponent {
             <FormItem {...formItemLayout} label='活动截止日期'>
               {
                 getFieldDecorator('endTime', {
-                  initialValue: object.endTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.endTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='活动是否截止'>
@@ -201,7 +270,7 @@ class RoutineForm extends PureComponent {
               {
                 getFieldDecorator('visibility', {
                   initialValue: object.visibility
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleVisibilityClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='日常活动标题'>
@@ -211,14 +280,21 @@ class RoutineForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
+            <FormItem {...formItemLayout} label='组织名称'>
+              {
+                getFieldDecorator('orgName', {
+                  initialValue: object.orgName
+                })(<Input placeholder='' />)
+              }
+            </FormItem>
           </Form>
         </Card>
         <FooterToolbar style={{width: '100%'}}>
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

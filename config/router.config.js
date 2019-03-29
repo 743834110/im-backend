@@ -150,6 +150,52 @@ export default [
         ]
       },
       {
+        path: '/dictionary',
+        icon: 'dictionary',
+        name: 'dictionary',
+        routes: [
+          {
+            path: '/dictionary/dictionaryList',
+            name: 'dictionaryList',
+            component: './Dictionary/DictionaryList'
+          },
+          {
+            path: '/dictionary/dictionaryForm/',
+            name: 'dictionaryForm',
+            component: './Dictionary/DictionaryForm'
+          },
+          {
+            path: '/dictionary/dictionaryForm/:dictionaryId',
+            hideInMenu: true,
+            name: 'dictionaryForm',
+            component: './Dictionary/DictionaryForm'
+          }
+        ]
+      },
+      {
+        path: '/dictionaryType',
+        icon: 'dictionaryType',
+        name: 'dictionaryType',
+        routes: [
+          {
+            path: '/dictionaryType/dictionaryTypeList',
+            name: 'dictionaryTypeList',
+            component: './DictionaryType/DictionaryTypeList'
+          },
+          {
+            path: '/dictionaryType/dictionaryTypeForm/',
+            name: 'dictionaryTypeForm',
+            component: './DictionaryType/DictionaryTypeForm'
+          },
+          {
+            path: '/dictionaryType/dictionaryTypeForm/:codeItemId',
+            hideInMenu: true,
+            name: 'dictionaryTypeForm',
+            component: './DictionaryType/DictionaryTypeForm'
+          }
+        ]
+      },
+      {
         path: '/form',
         icon: 'form',
         name: 'form',
@@ -164,6 +210,11 @@ export default [
             name: 'basicform',
             hideInMenu:true,
             component: './Forms/BasicForm',
+          },
+          {
+            path: '/form/advanced-form/:id',
+            name: 'advancedform',
+            component: './Forms/AdvancedForm',
           },
         ]
       }

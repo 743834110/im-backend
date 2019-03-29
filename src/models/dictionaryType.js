@@ -1,9 +1,8 @@
-import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryDictionary, removeDictionary, addDictionary, updateDictionary, queryById } from '../../../services/dictionary';
+import { queryDictionaryType, removeDictionaryType, addDictionaryType, updateDictionaryType, queryById } from '@/services/dictionaryType';
 
 export default {
-  namespace: '_dictionary',
+  namespace: '_dictionaryType',
 
   state: {
     // 列表
@@ -18,7 +17,7 @@ export default {
   effects: {
     // 批量提取
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryDictionary, payload);
+      const response = yield call(queryDictionaryType, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -34,7 +33,7 @@ export default {
     },
 
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addDictionary, payload);
+      const response = yield call(addDictionaryType, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -45,7 +44,7 @@ export default {
       }
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeDictionary, payload);
+      const response = yield call(removeDictionaryType, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -55,7 +54,7 @@ export default {
       }
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateDictionary, payload);
+      const response = yield call(updateDictionaryType, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -78,7 +77,7 @@ export default {
     saveList(state, action) {
       // 此处添加key是用于table内部优化处理
       const list = action.payload.data.result.map(value => ({
-        key: value.dictionaryId,
+        key: value.codeItemId,
         ...value
       }))
       const data = {

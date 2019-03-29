@@ -1,12 +1,25 @@
 import moment from 'moment';
 import React from 'react';
+import ReactDOM from 'react-dom'
 import nzh from 'nzh/cn';
 import { parse, stringify } from 'qs';
 
+/**
+ *
+ * @param val
+ * @returns {string}
+ */
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
 }
 
+
+
+/**
+ *
+ * @param type
+ * @returns {moment.Moment[]}
+ */
 export function getTimeDistance(type) {
   const now = new Date();
   const oneDay = 1000 * 60 * 60 * 24;
@@ -193,3 +206,28 @@ export const importCDN = (url, name) =>
     };
     document.head.appendChild(dom);
   });
+
+/**
+ *
+ * @param component
+ * @return {{destory: destory}}
+ */
+export const generateDynamicElement = (component) => {
+
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  window.g_app.router(() => component);
+  window.g_app.start(div);
+
+  return {
+    destory: () => {
+      const unmountResult = ReactDOM.unmountComponentAtNode(div);
+      if (unmountResult && div.parentNode) {
+        div.parentNode.removeChild(div);
+      }
+    }
+  }
+
+
+};
+

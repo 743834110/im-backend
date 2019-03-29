@@ -88,7 +88,9 @@ class UserList extends PureComponent {
       },
       {
         title: '初始密码更改日期',
-        dataIndex: 'userPasswordChanged'
+        dataIndex: 'userPasswordChanged',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '是否有效',
@@ -96,11 +98,15 @@ class UserList extends PureComponent {
       },
       {
         title: '启用日期',
-        dataIndex: 'userEnabledDate'
+        dataIndex: 'userEnabledDate',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '失效日期',
-        dataIndex: 'userDisabledDate'
+        dataIndex: 'userDisabledDate',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '账号是否锁定',
@@ -108,11 +114,15 @@ class UserList extends PureComponent {
       },
       {
         title: '最后登录时间',
-        dataIndex: 'lastLoginDate'
+        dataIndex: 'lastLoginDate',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '创建时间',
-        dataIndex: 'createTime'
+        dataIndex: 'createTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '创建人',
@@ -120,7 +130,9 @@ class UserList extends PureComponent {
       },
       {
         title: '修改时间',
-        dataIndex: 'modifyTime'
+        dataIndex: 'modifyTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '修改人',
@@ -147,17 +159,11 @@ class UserList extends PureComponent {
         dataIndex: 'userShortMobile'
       },
       {
-        title: '管理员角色编号',
-        dataIndex: 'roleId'
-      },
-      {
         title: '操作',
         render: (record) => {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.userId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -201,7 +207,9 @@ class UserList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -271,6 +279,10 @@ class UserList extends PureComponent {
             userIds: selectedRows.map(row => row.userId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_user/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });

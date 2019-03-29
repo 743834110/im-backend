@@ -1,8 +1,7 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // 日期处理类库
 import moment from 'moment';
-import router from 'umi/router';
 import {
   Row,
   Col,
@@ -12,14 +11,8 @@ import {
   Select,
   Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Divider
 } from 'antd';
 import StandardTable from '../../components/StandardTable';
-import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../TableList.less';
 
 
@@ -29,23 +22,19 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const sexMap = {
-  "M": '男',
-  "W": '女'
-};
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ _dictionaryType, loading }) => {
+@connect(({ _dictionary, loading }) => {
   return {
-    _dictionaryType,
-    loading: loading.models._dictionaryType,
+    _dictionary,
+    loading: loading.models._dictionary,
   };
 })
 
 // 需要动态生成。
 @Form.create()
-class DictionaryTypeList extends PureComponent {
+class SelectDictionary extends PureComponent {
   state = {
     expandForm: false,
     selectedRows: [],
@@ -58,56 +47,49 @@ class DictionaryTypeList extends PureComponent {
      * @type {*[]}
      */
     columns: [
-      {
-        title: '分类编码',
-        dataIndex: 'codeItemId'
+                          {
+        title: '具体分类名称',
+        dataIndex: 'codeName'
       },
-      {
-        title: '分类名称',
-        dataIndex: 'codeItemName'
-      },
-      {
+          {
         title: '创建时间',
         dataIndex: 'createTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '创建人ID',
         dataIndex: 'createPerson'
       },
-      {
-        title: '修改人ID',
-        dataIndex: 'modifyPerson'
-      },
-      {
+          {
         title: '修改时间',
         dataIndex: 'modifyTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
-        title: '操作',
-        render: (record) => {
-          return (
-            <Fragment>
-              <a onClick={() => this.previewItem(record.codeItemId)}>配置</a>
-            </Fragment>
-          )
-        },
+          {
+        title: '修改人ID',
+        dataIndex: 'modifyPerson'
       },
-    ]
+            ]
   };
 
 
   /**
    * 需要动态生成。
+   * 提交查询参数，更新显示查询字段域值
    */
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, param, form: {setFieldsValue} } = this.props;
     dispatch({
-      type: '_dictionaryType/fetch',
+      type: '_dictionary/fetch',
+      payload: {
+        pager: {
+          param
+        }
+      }
     });
+    setFieldsValue(param);
   }
 
   /**
@@ -136,34 +118,16 @@ class DictionaryTypeList extends PureComponent {
     };
     if (sorter.field) {
       const object = {};
-      object[sorter.field] = sorter.order.replace('end', '');
+      object[sorter.field] = sorter.order;
       params.pager.sorter = [object];
     }
 
-    console.log(params);
-
     // 动态生成
     dispatch({
-      type: '_dictionaryType/fetch',
+      type: '_dictionary/fetch',
       payload: params,
     });
   };
-
-  /**
-   * 预览某一个项目，
-   * 跳入下一页页面
-   * 需要动态生成
-   * @param id
-   */
-  previewItem = id => {
-    router.push(`/dictionaryType/dictionaryTypeForm/${id}`);
-  };
-  newItem = () => {
-    router.push(`/dictionaryType/dictionaryTypeForm`);
-  };
-
-
-
 
   /**
    * 搜索表单重置
@@ -176,7 +140,7 @@ class DictionaryTypeList extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: '_dictionaryType/fetch',
+      type: '_dictionary/fetch',
       payload: {},
     });
   };
@@ -190,50 +154,21 @@ class DictionaryTypeList extends PureComponent {
       expandForm: !expandForm,
     });
   };
-
-  /**
-   * 菜单点击事件：有如delete
-   * @param e
-   */
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-
-    if (selectedRows.length === 0) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: '_dictionaryType/remove',
-          payload: {
-            codeItemIds: selectedRows.map(row => row.codeItemId).join(','),
-          },
-          callback: () => {
-            dispatch({
-              type: '_dictionaryType/fetch',
-              payload: {},
-            });
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
-
-  /**
+ 
+   /**
    * 选中当前行事件
    * @param rows
    */
   handleSelectRows = rows => {
+    const {handleSelectRows} = this.props;
     this.setState({
       selectedRows: rows,
     });
+    if (handleSelectRows) {
+      handleSelectRows(rows);
+    }
   };
-
+  
   /**
    * 点击搜索目标数据事件
    * @param e
@@ -253,10 +188,9 @@ class DictionaryTypeList extends PureComponent {
       this.setState({
         formValues: values,
       });
-      console.log(values);
 
       dispatch({
-        type: '_dictionaryType/fetch',
+        type: '_dictionary/fetch',
         payload: {
           pager: {
             param: values
@@ -277,13 +211,13 @@ class DictionaryTypeList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="分类名称">
-              {getFieldDecorator('codeItemName')(<Input placeholder="请输入" />)}
+            <FormItem label="分类类别">
+              {getFieldDecorator('codeItemId')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>          
           <Col md={8} sm={24}>
-            <FormItem label="父节点编号">
-              {getFieldDecorator('parentId')(<Input placeholder="请输入" />)}
+            <FormItem label="具体分类ID">
+              {getFieldDecorator('codeId')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>          
           <Col md={8} sm={24}>
@@ -313,35 +247,47 @@ class DictionaryTypeList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="分类名称">
-              {getFieldDecorator('codeItemName')(<Input placeholder="请输入" />)}
+            <FormItem label="分类类别">
+              {getFieldDecorator('codeItemId')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
-            <FormItem label="父节点编号">
-              {getFieldDecorator('parentId')(<Input placeholder="请输入" />)}
+            <FormItem label="具体分类ID">
+              {getFieldDecorator('codeId')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
+          <Col md={8} sm={24}>
+            <FormItem label="具体分类名称">
+              {getFieldDecorator('codeName')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="创建时间">
               {getFieldDecorator('createTime')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="创建人ID">
               {getFieldDecorator('createPerson')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
+            <FormItem label="修改时间">
+              {getFieldDecorator('modifyTime')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
             <FormItem label="修改人ID">
               {getFieldDecorator('modifyPerson')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
-            <FormItem label="修改时间">
-              {getFieldDecorator('modifyTime')(<Input placeholder="请输入" />)}
+            <FormItem label="父级节点">
+              {getFieldDecorator('parentCodeId')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>
@@ -370,49 +316,32 @@ class DictionaryTypeList extends PureComponent {
   render() {
     // 需要动态生成。
     const {
-      _dictionaryType: { data = {} },
+      _dictionary: { data = {} },
       loading,
     } = this.props;
     const {selectedRows, columns} = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-      </Menu>
-    );
 
     return (
-      <PageHeaderWrapper title="查询表格">
-        <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.newItem()}>
-                新建
-              </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
-            </div>
-            <StandardTable
-              selectedRows={selectedRows}
-              loading={loading}
-              data={data}
-              columns={columns}
-              onSelectRow={this.handleSelectRows}
-              onChange={this.handleStandardTableChange}
-            />
+      <Card bordered={false}>
+        <div className={styles.tableList}>
+          <div className={styles.tableListForm}>{this.renderForm()}</div>
+          <div className={styles.tableListOperator}>
+            <Button icon="plus" type="primary" onClick={() => this.newItem()}>
+              新建
+            </Button>
           </div>
-        </Card>
-      </PageHeaderWrapper>
+          <StandardTable
+            selectedRows={selectedRows}
+            loading={loading}
+            data={data}
+            columns={columns}
+            onSelectRow={this.handleSelectRows}
+            onChange={this.handleStandardTableChange}
+          />
+        </div>
+      </Card>
     );
   }
 }
 
-export default DictionaryTypeList;
+export default SelectDictionary;

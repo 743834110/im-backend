@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -72,6 +74,12 @@ class DictionaryTypeForm extends PureComponent {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
@@ -83,6 +91,12 @@ class DictionaryTypeForm extends PureComponent {
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
 
 
   render() {
@@ -120,11 +134,11 @@ class DictionaryTypeForm extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem>
+            <FormItem {...formItemLayout} label='分类编码'>
               {
                 getFieldDecorator('codeItemId', {
                   initialValue: object.codeItemId
-                })(<Input type='hidden' placeholder='' />)
+                })(<Input placeholder='' disabled={beanStatus !== 'add'} />)
               }
             </FormItem>  
             <FormItem {...formItemLayout} label='分类名称'>
@@ -144,8 +158,8 @@ class DictionaryTypeForm extends PureComponent {
             <FormItem {...formItemLayout} label='创建时间'>
               {
                 getFieldDecorator('createTime', {
-                  initialValue: object.createTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.createTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='创建人ID'>
@@ -165,8 +179,8 @@ class DictionaryTypeForm extends PureComponent {
             <FormItem {...formItemLayout} label='修改时间'>
               {
                 getFieldDecorator('modifyTime', {
-                  initialValue: object.modifyTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.modifyTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
           </Form>
@@ -175,8 +189,8 @@ class DictionaryTypeForm extends PureComponent {
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

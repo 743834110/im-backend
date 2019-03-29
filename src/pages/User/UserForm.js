@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -16,6 +18,9 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import SelectDictionary from "../Dictionary/SelectDictionary";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -72,6 +77,12 @@ class UserForm extends PureComponent {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
@@ -83,10 +94,42 @@ class UserForm extends PureComponent {
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
+
+  /**
+   * 处理用户类型点击事件
+   */
+  handleUserTypeClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'userType': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('userType');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'USER', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };
 
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
       submitting
       , _user: {
@@ -134,13 +177,6 @@ class UserForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='用户密码'>
-              {
-                getFieldDecorator('userPassword', {
-                  initialValue: object.userPassword
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
             <FormItem {...formItemLayout} label='用户名称'>
               {
                 getFieldDecorator('userName', {
@@ -179,8 +215,8 @@ class UserForm extends PureComponent {
             <FormItem {...formItemLayout} label='初始密码更改日期'>
               {
                 getFieldDecorator('userPasswordChanged', {
-                  initialValue: object.userPasswordChanged
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.userPasswordChanged)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='是否有效'>
@@ -193,15 +229,15 @@ class UserForm extends PureComponent {
             <FormItem {...formItemLayout} label='启用日期'>
               {
                 getFieldDecorator('userEnabledDate', {
-                  initialValue: object.userEnabledDate
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.userEnabledDate)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='失效日期'>
               {
                 getFieldDecorator('userDisabledDate', {
-                  initialValue: object.userDisabledDate
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.userDisabledDate)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='账号是否锁定'>
@@ -214,15 +250,15 @@ class UserForm extends PureComponent {
             <FormItem {...formItemLayout} label='最后登录时间'>
               {
                 getFieldDecorator('lastLoginDate', {
-                  initialValue: object.lastLoginDate
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.lastLoginDate)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='创建时间'>
               {
                 getFieldDecorator('createTime', {
-                  initialValue: object.createTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.createTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='创建人'>
@@ -235,8 +271,8 @@ class UserForm extends PureComponent {
             <FormItem {...formItemLayout} label='修改时间'>
               {
                 getFieldDecorator('modifyTime', {
-                  initialValue: object.modifyTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.modifyTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='修改人'>
@@ -257,7 +293,7 @@ class UserForm extends PureComponent {
               {
                 getFieldDecorator('userType', {
                   initialValue: object.userType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleUserTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='盐值'>
@@ -294,8 +330,8 @@ class UserForm extends PureComponent {
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

@@ -59,10 +59,6 @@ class RoutineList extends PureComponent {
      */
     columns: [
       {
-        title: '用户ID',
-        dataIndex: 'userId'
-      },
-      {
         title: '用户名称',
         dataIndex: 'userName'
       },
@@ -76,19 +72,19 @@ class RoutineList extends PureComponent {
       },
       {
         title: '创建时间',
-        dataIndex: 'createTime'
+        dataIndex: 'createTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '用户类型',
         dataIndex: 'userType'
       },
       {
-        title: '组织ID',
-        dataIndex: 'orgId'
-      },
-      {
         title: '活动截止日期',
-        dataIndex: 'endTime'
+        dataIndex: 'endTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '活动是否截止',
@@ -107,13 +103,15 @@ class RoutineList extends PureComponent {
         dataIndex: 'title'
       },
       {
+        title: '组织名称',
+        dataIndex: 'orgName'
+      },
+      {
         title: '操作',
         render: (record) => {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.routineId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -176,6 +174,7 @@ class RoutineList extends PureComponent {
   previewItem = id => {
     router.push(`/routine/routineForm/${id}`);
   };
+
   newItem = () => {
     router.push(`/routine/routineForm`);
   };
@@ -227,6 +226,10 @@ class RoutineList extends PureComponent {
             routineIds: selectedRows.map(row => row.routineId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_routine/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });
@@ -390,6 +393,13 @@ class RoutineList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="日常活动标题">
               {getFieldDecorator('title')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="组织名称">
+              {getFieldDecorator('orgName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>

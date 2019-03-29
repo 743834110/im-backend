@@ -59,11 +59,11 @@ class DictionaryList extends PureComponent {
      */
     columns: [
       {
-        title: '分类类别',
+        title: '分类编号',
         dataIndex: 'codeItemId'
       },
       {
-        title: '具体分类ID',
+        title: '具体分类名称',
         dataIndex: 'codeId'
       },
       {
@@ -72,7 +72,9 @@ class DictionaryList extends PureComponent {
       },
       {
         title: '创建时间',
-        dataIndex: 'createTime'
+        dataIndex: 'createTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '创建人ID',
@@ -80,15 +82,13 @@ class DictionaryList extends PureComponent {
       },
       {
         title: '修改时间',
-        dataIndex: 'modifyTime'
+        dataIndex: 'modifyTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '修改人ID',
         dataIndex: 'modifyPerson'
-      },
-      {
-        title: '父级节点',
-        dataIndex: 'parentCodeId'
       },
       {
         title: '操作',
@@ -96,8 +96,6 @@ class DictionaryList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.dictionaryId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -211,6 +209,10 @@ class DictionaryList extends PureComponent {
             dictionaryIds: selectedRows.map(row => row.dictionaryId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_dictionary/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });

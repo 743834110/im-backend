@@ -1,6 +1,8 @@
-import { stringify } from 'qs';
 import request from '../utils/request';
 
+/**
+ * 通过ID查询
+ */
 export async function queryById(params) {
   return request('/rest/dictionaryService/queryById', {
     method: 'POST',
@@ -11,7 +13,7 @@ export async function queryById(params) {
 }
 
 /**
- * 查询用户
+ * 通过分页对象查询
  * @param params
  * @return {Promise<*>}
  */
@@ -25,7 +27,7 @@ export async function queryDictionary(params) {
 }
 
 /**
- * 删除用户
+ * 通过ID数组进行对象的删除
  * @param params
  * @return {Promise<*>}
  */
@@ -40,8 +42,8 @@ export async function removeDictionary(params) {
 }
 
 /**
- * 添加用户
- * 可能需要进行更新
+ * 
+ * 添加对象
  * @param params
  * @return {Promise<*>}
  */
@@ -56,7 +58,7 @@ export async function addDictionary(params) {
 }
 
 /**
- * 更新用户
+ * 更新对象数据
  * @param params
  * @return {Promise<*>}
  */

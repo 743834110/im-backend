@@ -1,6 +1,5 @@
 import fetch from 'dva/fetch';
 import { notification } from 'antd';
-import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
 
