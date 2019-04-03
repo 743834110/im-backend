@@ -104,6 +104,52 @@ export default [
         ]
       },
       {
+        path: '/role',
+        icon: 'role',
+        name: 'role',
+        routes: [
+          {
+            path: '/role/roleList',
+            name: 'roleList',
+            component: './Role/RoleList'
+          },
+          {
+            path: '/role/roleForm/',
+            name: 'roleForm',
+            component: './Role/RoleForm'
+          },
+          {
+            path: '/role/roleForm/:roleId',
+            hideInMenu: true,
+            name: 'roleForm',
+            component: './Role/RoleForm'
+          }
+        ]
+      },
+      {
+        path: '/userOrgRole',
+        icon: 'userOrgRole',
+        name: 'userOrgRole',
+        routes: [
+          {
+            path: '/userOrgRole/userOrgRoleList',
+            name: 'userOrgRoleList',
+            component: './UserOrgRole/UserOrgRoleList'
+          },
+          {
+            path: '/userOrgRole/userOrgRoleForm/',
+            name: 'userOrgRoleForm',
+            component: './UserOrgRole/UserOrgRoleForm'
+          },
+          {
+            path: '/userOrgRole/userOrgRoleForm/:userOrgRoleId',
+            hideInMenu: true,
+            name: 'userOrgRoleForm',
+            component: './UserOrgRole/UserOrgRoleForm'
+          }
+        ]
+      },
+      {
         path: '/organization',
         icon: 'organization',
         name: 'organization',
@@ -192,6 +238,75 @@ export default [
             hideInMenu: true,
             name: 'dictionaryTypeForm',
             component: './DictionaryType/DictionaryTypeForm'
+          }
+        ]
+      },
+      {
+        path: '/userOrg',
+        icon: 'userOrg',
+        name: 'userOrg',
+        routes: [
+          {
+            path: '/userOrg/userOrgList',
+            name: 'userOrgList',
+            component: './UserOrg/UserOrgList'
+          },
+          {
+            path: '/userOrg/userOrgForm/',
+            name: 'userOrgForm',
+            component: './UserOrg/UserOrgForm'
+          },
+          {
+            path: '/userOrg/userOrgForm/:userOrgId',
+            hideInMenu: true,
+            name: 'userOrgForm',
+            component: './UserOrg/UserOrgForm'
+          }
+        ]
+      },
+      {
+        path: '/chatGroup',
+        icon: 'chatGroup',
+        name: 'chatGroup',
+        routes: [
+          {
+            path: '/chatGroup/chatGroupList',
+            name: 'chatGroupList',
+            component: './ChatGroup/ChatGroupList'
+          },
+          {
+            path: '/chatGroup/chatGroupForm/',
+            name: 'chatGroupForm',
+            component: './ChatGroup/ChatGroupForm'
+          },
+          {
+            path: '/chatGroup/chatGroupForm/:groupId',
+            hideInMenu: true,
+            name: 'chatGroupForm',
+            component: './ChatGroup/ChatGroupForm'
+          }
+        ]
+      },
+      {
+        path: '/workGroupMember',
+        icon: 'workGroupMember',
+        name: 'workGroupMember',
+        routes: [
+          {
+            path: '/workGroupMember/workGroupMemberList',
+            name: 'workGroupMemberList',
+            component: './WorkGroupMember/WorkGroupMemberList'
+          },
+          {
+            path: '/workGroupMember/workGroupMemberForm/',
+            name: 'workGroupMemberForm',
+            component: './WorkGroupMember/WorkGroupMemberForm'
+          },
+          {
+            path: '/workGroupMember/workGroupMemberForm/:memberId',
+            hideInMenu: true,
+            name: 'workGroupMemberForm',
+            component: './WorkGroupMember/WorkGroupMemberForm'
           }
         ]
       },

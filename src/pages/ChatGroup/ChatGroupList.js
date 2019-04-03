@@ -59,14 +59,6 @@ class ChatGroupList extends PureComponent {
      */
     columns: [
       {
-        title: '创建组织ID',
-        dataIndex: 'orgId'
-      },
-      {
-        title: '创建ID',
-        dataIndex: 'userId'
-      },
-      {
         title: '群组名称',
         dataIndex: 'name'
       },
@@ -80,8 +72,6 @@ class ChatGroupList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.groupId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -125,7 +115,9 @@ class ChatGroupList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -195,6 +187,10 @@ class ChatGroupList extends PureComponent {
             groupIds: selectedRows.map(row => row.groupId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_chatGroup/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });

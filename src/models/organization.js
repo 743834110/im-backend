@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryOrganization, removeOrganization, addOrganization, updateOrganization, queryById } from '../../../services/organization';
+import { queryOrganization, removeOrganization, addOrganization, updateOrganization, queryById } from '@/services/organization';
 
 export default {
   namespace: '_organization',

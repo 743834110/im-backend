@@ -1,8 +1,7 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // 日期处理类库
 import moment from 'moment';
-import router from 'umi/router';
 import {
   Row,
   Col,
@@ -12,14 +11,8 @@ import {
   Select,
   Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Divider
 } from 'antd';
 import StandardTable from '../../components/StandardTable';
-import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../TableList.less';
 
 
@@ -29,10 +22,6 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const sexMap = {
-  "M": '男',
-  "W": '女'
-};
 
 
 /* eslint react/no-multi-comp:0 */
@@ -45,7 +34,7 @@ const sexMap = {
 
 // 需要动态生成。
 @Form.create()
-class UserList extends PureComponent {
+class SelectUser extends PureComponent {
   state = {
     expandForm: false,
     selectedRows: [],
@@ -58,93 +47,125 @@ class UserList extends PureComponent {
      * @type {*[]}
      */
     columns: [
-      {
+          {
         title: '用户账号',
         dataIndex: 'userAccount'
       },
-      {
+          {
+        title: '用户密码',
+        dataIndex: 'userPassword'
+      },
+          {
         title: '用户名称',
         dataIndex: 'userName'
       },
-      {
+          {
+        title: '手机号',
+        dataIndex: 'userMobile'
+      },
+          {
+        title: 'QQ邮箱',
+        dataIndex: 'userEmail'
+      },
+          {
+        title: '用户头像地址',
+        dataIndex: 'userImageUrl'
+      },
+          {
+        title: '用户描述',
+        dataIndex: 'userDescription'
+      },
+          {
         title: '初始密码更改日期',
         dataIndex: 'userPasswordChanged',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '是否有效',
         dataIndex: 'valid'
       },
-      {
+          {
         title: '启用日期',
         dataIndex: 'userEnabledDate',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '失效日期',
         dataIndex: 'userDisabledDate',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '账号是否锁定',
         dataIndex: 'userAccountLocked'
       },
-      {
+          {
         title: '最后登录时间',
         dataIndex: 'lastLoginDate',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '创建时间',
         dataIndex: 'createTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
         title: '创建人',
         dataIndex: 'createPerson'
       },
-      {
+          {
         title: '修改时间',
         dataIndex: 'modifyTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-      {
+          {
+        title: '修改人',
+        dataIndex: 'modifyPerson'
+      },
+          {
+        title: '用户性别',
+        dataIndex: 'userSex'
+      },
+          {
         title: '用户类型',
         dataIndex: 'userType'
       },
-
-      {
+          {
+        title: '盐值',
+        dataIndex: 'salt'
+      },
+          {
+        title: '留言',
+        dataIndex: 'words'
+      },
+          {
         title: '校园短号',
         dataIndex: 'userShortMobile'
       },
-      {
-        title: '操作',
-        render: (record) => {
-          return (
-            <Fragment>
-              <a onClick={() => this.previewItem(record.userId)}>配置</a>
-            </Fragment>
-          )
-        },
-      },
-    ]
+            ]
   };
 
 
   /**
    * 需要动态生成。
+   * 提交查询参数，更新显示查询字段域值
    */
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, param, form: {setFieldsValue} } = this.props;
     dispatch({
       type: '_user/fetch',
+      payload: {
+        pager: {
+          param
+        }
+      }
     });
+    setFieldsValue(param);
   }
 
   /**
@@ -185,22 +206,6 @@ class UserList extends PureComponent {
   };
 
   /**
-   * 预览某一个项目，
-   * 跳入下一页页面
-   * 需要动态生成
-   * @param id
-   */
-  previewItem = id => {
-    router.push(`/user/userForm/${id}`);
-  };
-  newItem = () => {
-    router.push(`/user/userForm`);
-  };
-
-
-
-
-  /**
    * 搜索表单重置
    * 需要动态生成
    */
@@ -225,50 +230,21 @@ class UserList extends PureComponent {
       expandForm: !expandForm,
     });
   };
-
-  /**
-   * 菜单点击事件：有如delete
-   * @param e
-   */
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-
-    if (selectedRows.length === 0) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: '_user/remove',
-          payload: {
-            userIds: selectedRows.map(row => row.userId).join(','),
-          },
-          callback: () => {
-            dispatch({
-              type: '_user/fetch',
-              payload: {},
-            });
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
-
-  /**
+ 
+   /**
    * 选中当前行事件
    * @param rows
    */
   handleSelectRows = rows => {
+    const {handleSelectRows} = this.props;
     this.setState({
       selectedRows: rows,
     });
+    if (handleSelectRows) {
+      handleSelectRows(rows);
+    }
   };
-
+  
   /**
    * 点击搜索目标数据事件
    * @param e
@@ -288,7 +264,6 @@ class UserList extends PureComponent {
       this.setState({
         formValues: values,
       });
-      console.log(values);
 
       dispatch({
         type: '_user/fetch',
@@ -506,45 +481,24 @@ class UserList extends PureComponent {
       loading,
     } = this.props;
     const {selectedRows, columns} = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-      </Menu>
-    );
 
     return (
-      <PageHeaderWrapper title="查询表格">
-        <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.newItem()}>
-                新建
-              </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
-            </div>
-            <StandardTable
-              selectedRows={selectedRows}
-              loading={loading}
-              data={data}
-              columns={columns}
-              onSelectRow={this.handleSelectRows}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-        </Card>
-      </PageHeaderWrapper>
+      <Card bordered={false}>
+        <div className={styles.tableList}>
+          <div className={styles.tableListForm}>{this.renderForm()}</div>
+          <div className={styles.tableListOperator} />
+          <StandardTable
+            selectedRows={selectedRows}
+            loading={loading}
+            data={data}
+            columns={columns}
+            onSelectRow={this.handleSelectRows}
+            onChange={this.handleStandardTableChange}
+          />
+        </div>
+      </Card>
     );
   }
 }
 
-export default UserList;
+export default SelectUser;

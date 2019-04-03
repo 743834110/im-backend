@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -72,6 +74,12 @@ class WorkGroupMemberForm extends PureComponent {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
@@ -83,6 +91,12 @@ class WorkGroupMemberForm extends PureComponent {
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
 
 
   render() {
@@ -155,14 +169,21 @@ class WorkGroupMemberForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
+            <FormItem {...formItemLayout} label='头像地址'>
+              {
+                getFieldDecorator('memberImageUrl', {
+                  initialValue: object.memberImageUrl
+                })(<Input placeholder='' />)
+              }
+            </FormItem>
           </Form>
         </Card>
         <FooterToolbar style={{width: '100%'}}>
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

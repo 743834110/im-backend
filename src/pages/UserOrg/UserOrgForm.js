@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -16,6 +18,11 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectDictionary from "../Dictionary/SelectDictionary";
+import SelectUser from "../User/SelectUser";
+import SelectOrganization from "../Organization/SelectOrganization";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -68,10 +75,17 @@ class UserOrgForm extends PureComponent {
       case "update":
         type = '_userOrg/update';
         break;
+      default:
     }
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
@@ -83,17 +97,80 @@ class UserOrgForm extends PureComponent {
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
+
+
+  /**
+   * 处理组织点击事件
+   */
+  handleOrgClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      console.log(res[0]);
+      setFieldsValue({
+        ...res[0],
+        parentOrgId: res[0].parentId,
+      });
+    };
+    const orgId = getFieldValue('orgId');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{orgId}}>
+        <SelectOrganization />
+      </SelectEntityModal>
+    );
+  };
+
+  /**
+   * 选择学生
+   */
+  handleUserClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'userName': res[0].userName,
+        'userId': res[0].userId
+      });
+    };
+    const userName = getFieldValue('userName');
+    const userId = getFieldValue('userId');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{userName, userId}}>
+        <SelectUser />
+      </SelectEntityModal>
+    );
+  };
 
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
-      submitting
-      , _userOrg: {
+      _userOrg: {
         object = {}
       }
     } = this.props;
     const {
+      submitting,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
@@ -120,56 +197,46 @@ class UserOrgForm extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem>
-              {
-                getFieldDecorator('userOrgId', {
-                  initialValue: object.userOrgId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
-            <FormItem>
-              {
-                getFieldDecorator('userId', {
-                  initialValue: object.userId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
-            <FormItem>
-              {
-                getFieldDecorator('orgId', {
-                  initialValue: object.orgId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldDecorator('userOrgId', {
+                initialValue: object.userOrgId
+              })(<Input type='hidden' placeholder='' />)
+            }
+            {
+              getFieldDecorator('userId', {
+                initialValue: object.userId
+              })(<Input type='hidden' placeholder='' />)
+            }
+            {
+              getFieldDecorator('orgId', {
+                initialValue: object.orgId
+              })(<Input type='hidden' placeholder='' />)
+            }
             <FormItem {...formItemLayout} label='用户名称'>
               {
                 getFieldDecorator('userName', {
                   initialValue: object.userName
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleUserClick}/>} />)
               }
             </FormItem>
-            <FormItem>
-              {
-                getFieldDecorator('roleId', {
-                  initialValue: object.roleId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
-            <FormItem>
-              {
-                getFieldDecorator('parentOrgId', {
-                  initialValue: object.parentOrgId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldDecorator('roleId', {
+                initialValue: object.roleId
+              })(<Input type='hidden' placeholder='' />)
+            }
+            {
+              getFieldDecorator('parentOrgId', {
+                initialValue: object.parentOrgId
+              })(<Input type='hidden' placeholder='' />)
+            }
             <FormItem {...formItemLayout} label='组织类型'>
               {
                 getFieldDecorator('orgType', {
                   initialValue: object.orgType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' disabled />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='年级（在org_type为class类型是不能为空）'>
+            <FormItem {...formItemLayout} label='年级'>
               {
                 getFieldDecorator('grade', {
                   initialValue: object.grade
@@ -180,7 +247,7 @@ class UserOrgForm extends PureComponent {
               {
                 getFieldDecorator('orgName', {
                   initialValue: object.orgName
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleOrgClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户图像url'>
@@ -203,8 +270,8 @@ class UserOrgForm extends PureComponent {
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

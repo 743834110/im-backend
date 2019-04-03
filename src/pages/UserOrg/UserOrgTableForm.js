@@ -2,8 +2,11 @@ import React, { PureComponent, Fragment } from 'react';
 import { Table, Button, Input, message, Popconfirm, Divider } from 'antd';
 import isEqual from 'lodash/isEqual';
 import styles from '../../style.less';
+import {generateDynamicElement} from "../../utils/utils";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import SelectOrganization from "../Organization/SelectOrganization";
 
-class TableForm extends PureComponent {
+class UserOrgTableForm extends PureComponent {
   index = 0;
 
   cacheOriginData = {};
@@ -12,11 +15,13 @@ class TableForm extends PureComponent {
     super(props);
 
     this.state = {
-      data: props.value,
+      // 本组件
+      data: [],
       loading: false,
-      /* eslint-disable-next-line react/no-unused-state */
-      value: props.value,
+      params: props.params,
     };
+
+    // 作用域绑定：用户父组件调用组件的保存内容方法
   }
 
   static getDerivedStateFromProps(nextProps, preState) {
@@ -64,14 +69,21 @@ class TableForm extends PureComponent {
     }
   };
 
-  newMember = () => {
+  newUserOrg = () => {
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
     newData.push({
       key: `NEW_TEMP_ID_${this.index}`,
-      workId: '',
-      name: '',
-      department: '',
+      userId: '',
+      orgId: '',
+      userName: '',
+      roleId: '',
+      parentOrgId: '',
+      orgType: '',
+      grade: '',
+      orgName: '',
+      userImageUrl: '',
+      shortName: '',
       editable: true,
       isNew: true,
       beanStatus: "insert"
@@ -86,6 +98,7 @@ class TableForm extends PureComponent {
     const newData = data.filter(item => item.key !== key);
     newData.push({
       key,
+      userOrgId: key,
       beanStatus: 'delete'
       ,
     });
@@ -120,8 +133,18 @@ class TableForm extends PureComponent {
         return;
       }
       const target = this.getRowByKey(key) || {};
-      if (!target.workId || !target.name || !target.department) {
-        message.error('请填写完整成员信息。');
+      if (
+      !target.userId ||
+      !target.orgId ||
+      !target.userName ||
+      !target.roleId ||
+      !target.parentOrgId ||
+      !target.orgType ||
+      !target.grade ||
+      !target.orgName ||
+      !target.userImageUrl ||
+      !target.shortName      ) {
+        message.error('请填写完整信息。');
         e.target.focus();
         this.setState({
           loading: false,
@@ -154,22 +177,63 @@ class TableForm extends PureComponent {
     this.clickedCancel = false;
   }
 
+  /**
+   * 处理用户类型点击事件
+   */
+  handleOrgClick = () => {
+    let modal;
+    const { data } = this.state;
+    const newData = data.map(item => ({ ...item }));
+    this.index += 1;
+    this.setState({ data: newData });
+    /**
+     * 数据回调，设置值
+     */
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      res.forEach(item => {
+        newData.push({
+          key: `NEW_TEMP_ID_${this.index}`,
+          ...item,
+          beanStatus: 'insert'
+        })
+      });
+      this.index += 1;
+      this.setState({
+        data: newData,
+        loading: true,
+      });
+      setTimeout(() => {
+        this.setState({
+          loading: false
+        })
+      })
+    };
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk}>
+        <SelectOrganization />
+      </SelectEntityModal>
+    );
+  };
+
   render() {
     const columns = [
       {
-        title: '成员姓名',
-        dataIndex: 'name',
-        key: 'name',
-        width: '20%',
+        title: '用户名称',
+        dataIndex: 'userName',
+        key: 'userName',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'name', record.key)}
+                onChange={e => this.handleFieldChange(e, 'userName', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="成员姓名"
+                placeholder="用户名称"
               />
             );
           }
@@ -177,18 +241,18 @@ class TableForm extends PureComponent {
         },
       },
       {
-        title: '工号',
-        dataIndex: 'workId',
-        key: 'workId',
-        width: '20%',
+        title: '组织类型',
+        dataIndex: 'orgType',
+        key: 'orgType',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
-                onChange={e => this.handleFieldChange(e, 'workId', record.key)}
+                autoFocus
+                onChange={e => this.handleFieldChange(e, 'orgType', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="工号"
+                placeholder="组织类型"
               />
             );
           }
@@ -196,18 +260,56 @@ class TableForm extends PureComponent {
         },
       },
       {
-        title: '所属部门',
-        dataIndex: 'department',
-        key: 'department',
-        width: '40%',
+        title: '年级',
+        dataIndex: 'grade',
+        key: 'grade',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
-                onChange={e => this.handleFieldChange(e, 'department', record.key)}
+                autoFocus
+                onChange={e => this.handleFieldChange(e, 'grade', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="所属部门"
+                placeholder="年级（在org_type为class类型是不能为空）"
+              />
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: '组织名称',
+        dataIndex: 'orgName',
+        key: 'orgName',
+        render: (text, record) => {
+          if (record.editable) {
+            return (
+              <Input
+                value={text}
+                autoFocus
+                onChange={e => this.handleFieldChange(e, 'orgName', record.key)}
+                onKeyPress={e => this.handleKeyPress(e, record.key)}
+                placeholder="组织名称"
+              />
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: '组织简称',
+        dataIndex: 'shortName',
+        key: 'shortName',
+        render: (text, record) => {
+          if (record.editable) {
+            return (
+              <Input
+                value={text}
+                autoFocus
+                onChange={e => this.handleFieldChange(e, 'shortName', record.key)}
+                onKeyPress={e => this.handleKeyPress(e, record.key)}
+                placeholder="组织简称"
               />
             );
           }
@@ -260,8 +362,8 @@ class TableForm extends PureComponent {
     return (
       <Fragment>
         <div className={styles.tableListOperator}>
-          <Button icon="plus" type="primary" onClick={() => this.newItem()}>
-            选择组织机构
+          <Button icon="plus" type="primary" onClick={this.handleOrgClick}>
+            选择组织
           </Button>
         </div>
         <Table
@@ -274,14 +376,14 @@ class TableForm extends PureComponent {
         <Button
           style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
           type="dashed"
-          onClick={this.newMember}
+          onClick={this.newUserOrg}
           icon="plus"
         >
-          新增成员
+          新增
         </Button>
       </Fragment>
     );
   }
 }
 
-export default TableForm;
+export default UserOrgTableForm;

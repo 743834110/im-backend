@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -16,6 +18,10 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectDictionary from "../Dictionary/SelectDictionary";
+import SelectOrganization from "./SelectOrganization";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -68,32 +74,152 @@ class OrganizationForm extends PureComponent {
       case "update":
         type = '_organization/update';
         break;
+      default:
     }
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update'
+            })
           }
         });
       }
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
+
+
+  /**
+   * 处理组织类型点击事件
+   */
+  handleOrgTypeClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'orgType': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('orgType');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'ORGANATION', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };  
+
+  /**
+   * 处理专业类型点击事件
+   */
+  handleProTypeClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'proType': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('proType');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'PRO', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };  
+
+  /**
+   * 处理${column.comment}点击事件
+   */
+  handleAssociateTypeClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'associateType': res[0].codeId
+      });
+    };
+    const codeId = getFieldValue('associateType');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'ASSOCIATE', codeId}}>
+        <SelectDictionary />
+      </SelectEntityModal>
+    );
+  };
+
+  /**
+   * 处理${column.comment}点击事件
+   */
+  handleParentIdClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'parentId': res[0].orgId
+      });
+    };
+    const orgId = getFieldValue('parentId');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{orgId}}>
+        <SelectOrganization />
+      </SelectEntityModal>
+    );
+  };
 
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
-      submitting
-      , _organization: {
+      _organization: {
         object = {}
       }
     } = this.props;
     const {
+      submitting,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
@@ -127,25 +253,25 @@ class OrganizationForm extends PureComponent {
                 })(<Input type='hidden' placeholder='' />)
               }
             </FormItem>  
-            <FormItem>
+            <FormItem {...formItemLayout} label='父级机构'>
               {
                 getFieldDecorator('parentId', {
                   initialValue: object.parentId
-                })(<Input type='hidden' placeholder='' />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleParentIdClick} />}  />)
               }
             </FormItem>  
             <FormItem {...formItemLayout} label='组织类型'>
               {
                 getFieldDecorator('orgType', {
                   initialValue: object.orgType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleOrgTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='专业类型'>
               {
                 getFieldDecorator('proType', {
                   initialValue: object.proType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleProTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='组织描述'>
@@ -193,8 +319,8 @@ class OrganizationForm extends PureComponent {
             <FormItem {...formItemLayout} label='创建时间'>
               {
                 getFieldDecorator('createTime', {
-                  initialValue: object.createTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.createTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='年级'>
@@ -211,11 +337,11 @@ class OrganizationForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='${column.comment}'>
+            <FormItem {...formItemLayout} label='${column.comment}' >
               {
                 getFieldDecorator('associateType', {
                   initialValue: object.associateType
-                })(<Input placeholder='' />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleAssociateTypeClick} />} />)
               }
             </FormItem>
           </Form>
@@ -224,8 +350,8 @@ class OrganizationForm extends PureComponent {
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

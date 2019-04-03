@@ -16,7 +16,7 @@ import { connect } from 'dva';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableForm from './TableForm';
-import styles from './style.less';
+import styles from '../../style.less';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -136,12 +136,13 @@ class AdvancedForm extends PureComponent {
       dispatch,
     } = this.props;
     validateFieldsAndScroll((error, values) => {
+      console.log(values);
       if (!error) {
         // submit the values
-        dispatch({
-          type: 'form/submitAdvancedForm',
-          payload: values,
-        });
+        // dispatch({
+        //   type: 'form/submitAdvancedForm',
+        //   payload: values,
+        // });
       }
     });
   };
@@ -307,7 +308,7 @@ class AdvancedForm extends PureComponent {
         <Card title="成员管理" bordered={false}>
           {getFieldDecorator('members', {
             initialValue: tableData,
-          })(<TableForm />)}
+          })(<TableForm  />)}
         </Card>
         <FooterToolbar style={{ width }}>
           {this.getErrorInfo()}

@@ -21,6 +21,7 @@ import FooterToolbar from "../../components/FooterToolbar";
 import {generateDynamicElement} from "../../utils/utils";
 import SelectEntityModal from "../../components/SelectEntityModal";
 import SelectDictionary from "../Dictionary/SelectDictionary";
+import UserOrgTableForm from "../UserOrg/UserOrgTableForm";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -325,6 +326,13 @@ class UserForm extends PureComponent {
               }
             </FormItem>  
           </Form>
+        </Card>
+        <Card title='用户所属组织管理' style={{marginTop: '20px'}}>
+          {
+            getFieldDecorator('userOrgs', {
+              initialValue: object.userOrgs || []
+            })(<UserOrgTableForm />)
+          }
         </Card>
         <FooterToolbar style={{width: '100%'}}>
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>

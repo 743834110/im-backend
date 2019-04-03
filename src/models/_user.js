@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryUser, removeUser, addUser, updateUser, queryById } from '../../../services/user';
+import { queryUser, removeUser, addUser, updateUser, queryById } from '@/services/user';
 
 export default {
   namespace: '_user',

@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from 'antd';
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
-import styles from './style.less';
+import styles from '../../style.less';
 import TableForm from "./TableForm";
 import FooterToolbar from "../../components/FooterToolbar";
 

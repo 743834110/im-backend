@@ -59,10 +59,6 @@ class OrganizationList extends PureComponent {
      */
     columns: [
       {
-        title: '父级节点ID',
-        dataIndex: 'parentId'
-      },
-      {
         title: '组织类型',
         dataIndex: 'orgType'
       },
@@ -91,23 +87,21 @@ class OrganizationList extends PureComponent {
         dataIndex: 'valid'
       },
       {
-        title: '用户ID',
-        dataIndex: 'userId'
-      },
-      {
         title: '创建时间',
-        dataIndex: 'createTime'
+        dataIndex: 'createTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: '年级',
         dataIndex: 'grade'
       },
       {
-        title: '${column.comment}',
+        title: '组织简称',
         dataIndex: 'shortName'
       },
       {
-        title: '${column.comment}',
+        title: '专业类型',
         dataIndex: 'associateType'
       },
       {
@@ -116,8 +110,6 @@ class OrganizationList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.orgId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -161,7 +153,9 @@ class OrganizationList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -231,6 +225,10 @@ class OrganizationList extends PureComponent {
             orgIds: selectedRows.map(row => row.orgId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_organization/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });
@@ -392,14 +390,14 @@ class OrganizationList extends PureComponent {
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="组织简称">
               {getFieldDecorator('shortName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="专业类型">
               {getFieldDecorator('associateType')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

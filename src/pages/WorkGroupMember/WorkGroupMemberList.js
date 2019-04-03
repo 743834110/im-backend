@@ -59,20 +59,16 @@ class WorkGroupMemberList extends PureComponent {
      */
     columns: [
       {
-        title: '用户ID',
-        dataIndex: 'userId'
-      },
-      {
         title: '用户账号',
         dataIndex: 'userAccount'
       },
       {
-        title: '群组ID',
-        dataIndex: 'chatGroupId'
-      },
-      {
         title: '用户名称',
         dataIndex: 'userName'
+      },
+      {
+        title: '头像地址',
+        dataIndex: 'memberImageUrl'
       },
       {
         title: '操作',
@@ -80,8 +76,6 @@ class WorkGroupMemberList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.memberId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -125,7 +119,9 @@ class WorkGroupMemberList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -195,6 +191,10 @@ class WorkGroupMemberList extends PureComponent {
             memberIds: selectedRows.map(row => row.memberId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_workGroupMember/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });
@@ -314,6 +314,11 @@ class WorkGroupMemberList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="用户名称">
               {getFieldDecorator('userName')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+          <Col md={8} sm={24}>
+            <FormItem label="头像地址">
+              {getFieldDecorator('memberImageUrl')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>
