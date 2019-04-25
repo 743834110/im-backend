@@ -263,15 +263,9 @@ class OrganizationForm extends PureComponent {
             <FormItem {...formItemLayout} label='组织类型'>
               {
                 getFieldDecorator('orgType', {
-                  initialValue: object.orgType
+                  initialValue: object.orgType,
+                  rules: [{required: true, message: "必选项"}]
                 })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleOrgTypeClick} />} />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='专业类型'>
-              {
-                getFieldDecorator('proType', {
-                  initialValue: object.proType
-                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleProTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='组织描述'>
@@ -284,7 +278,8 @@ class OrganizationForm extends PureComponent {
             <FormItem {...formItemLayout} label='组织名称'>
               {
                 getFieldDecorator('orgName', {
-                  initialValue: object.orgName
+                  initialValue: object.orgName,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
@@ -305,17 +300,21 @@ class OrganizationForm extends PureComponent {
             <FormItem {...formItemLayout} label='是否有效'>
               {
                 getFieldDecorator('valid', {
-                  initialValue: object.valid
-                })(<Input placeholder='' />)
+                  initialValue: object.valid || 'Y',
+                  rules: [{required: true, message: "必填项"}]
+                })(
+                  <Select>
+                    <Option value='Y'>是</Option>
+                    <Option value='N'>否</Option>
+                  </Select>
+                )
               }
             </FormItem>
-            <FormItem>
               {
                 getFieldDecorator('userId', {
                   initialValue: object.userId
                 })(<Input type='hidden' placeholder='' />)
               }
-            </FormItem>  
             <FormItem {...formItemLayout} label='创建时间'>
               {
                 getFieldDecorator('createTime', {
@@ -323,27 +322,48 @@ class OrganizationForm extends PureComponent {
                 })(<DatePicker placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='年级'>
-              {
-                getFieldDecorator('grade', {
-                  initialValue: object.grade
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='${column.comment}'>
+            <FormItem {...formItemLayout} label='组织简称'>
               {
                 getFieldDecorator('shortName', {
-                  initialValue: object.shortName
+                  initialValue: object.shortName,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='${column.comment}' >
-              {
-                getFieldDecorator('associateType', {
-                  initialValue: object.associateType
-                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleAssociateTypeClick} />} />)
-              }
-            </FormItem>
+            {
+              getFieldValue('orgType') === 'CLASS' &&
+              <FormItem {...formItemLayout} label='年级'>
+                {
+                  getFieldDecorator('grade', {
+                    initialValue: object.grade,
+                    rules: [
+                      {required: true, message: '必填项'},
+                      {pattern: /^\d{4}$/, message: '必须为四个有效数字'},
+                      ]
+                  })(<Input placeholder='' />)
+                }
+              </FormItem>
+            }
+            {
+              getFieldValue('orgType') === 'CLASS' &&
+              <FormItem {...formItemLayout} label='专业类型'>
+                {
+                  getFieldDecorator('proType', {
+                    initialValue: object.proType
+                  })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleProTypeClick} />} />)
+                }
+              </FormItem>
+            }
+            {
+              getFieldValue('orgType') === 'STUDENT_CLUB' &&
+              <FormItem {...formItemLayout} label='社团类型' >
+                {
+                  getFieldDecorator('associateType', {
+                    initialValue: object.associateType
+                  })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleAssociateTypeClick} />} />)
+                }
+              </FormItem>
+            }
           </Form>
         </Card>
         <FooterToolbar style={{width: '100%'}}>

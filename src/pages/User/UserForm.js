@@ -14,6 +14,8 @@ import {
   Radio,
   Icon,
   Tooltip,
+  Upload,
+  Avatar
 } from 'antd';
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
@@ -22,6 +24,8 @@ import {generateDynamicElement} from "../../utils/utils";
 import SelectEntityModal from "../../components/SelectEntityModal";
 import SelectDictionary from "../Dictionary/SelectDictionary";
 import UserOrgTableForm from "../UserOrg/UserOrgTableForm";
+import SelectRole from "../Role/SelectRole";
+import {uploadFile} from "../../utils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -33,7 +37,7 @@ const { TextArea } = Input;
  */
 @connect(({ _user, loading }) => ({
   _user,
-  submitting: loading.effects['_user/add'],
+  submitting: loading.effects['_user/add'] || loading.effects['_file/upload'],
 }))
 @Form.create()
 class UserForm extends PureComponent {
@@ -58,9 +62,9 @@ class UserForm extends PureComponent {
         type: '_user/fetchOne',
         payload: params
       });
+
     }
   }
-
 
   handleSubmit = e => {
     const { dispatch, form } = this.props;
@@ -77,6 +81,7 @@ class UserForm extends PureComponent {
     }
 
     form.validateFieldsAndScroll((err, values) => {
+      console.log(values);
       if (!err) {
 	    // 预处理提交数据:主要是为了处理时间问题
         for (const key in values) {
@@ -84,13 +89,41 @@ class UserForm extends PureComponent {
                 values[key] = values[key] - 0;
             }
         }
-        dispatch({
-          type,
-          payload: values,
-          callback(transaction) {
-
-          }
-        });
+        // 进行文件上传操作
+        if (values.userImageUrl && values.userImageUrl.length !== 0) {
+          let fileData = new FormData();
+          console.log(values.userImageUrl[0].originFileObj);
+          fileData.append('files', values.userImageUrl[0].originFileObj);
+          fileData.append('newFile', JSON.stringify({compId: 'fdfd', busiId: 'dfd'}))
+          uploadFile(dispatch, fileData, (res) => {
+            values.userImageUrl = res.data.filePath;
+            dispatch({
+              type,
+              payload: values,
+              callback: () => {
+                this.setState({
+                  beanStatus: 'update',
+                })
+              }
+            });
+            // 调用子组件值提交方法
+            this.child && this.child.handleSubmit();
+          })
+        }
+        // 不需要进行文件上传时直接插入用户信息即可
+        else {
+          dispatch({
+            type,
+            payload: values,
+            callback: () => {
+              this.setState({
+                beanStatus: 'update',
+              })
+            }
+          });
+          // 调用子组件值提交方法
+          this.child && this.child.handleSubmit();
+        }
       }
     });
   };
@@ -128,9 +161,49 @@ class UserForm extends PureComponent {
     );
   };
 
+  /**
+   * 进行角色编码选择
+   */
+  handleRoleIdClick = () => {
+    let modal;
+    /**
+     * 数据回调，设置表单的值
+     */
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      setFieldsValue({
+        'roleId': res[0].roleId
+      });
+    };
+    const roleId = getFieldValue('roleId');
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{roleId}}>
+        <SelectRole/>
+      </SelectEntityModal>
+    );
+  };
+
+  /**
+   * 处理点击上传图片事件
+   * @param e
+   * @returns {*}
+   */
+  handleSelectImage = (e) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+
 
   render() {
     const {beanStatus} = this.state;
+    const {match: {params}} = this.props;
     let {
       submitting
       , _user: {
@@ -174,14 +247,16 @@ class UserForm extends PureComponent {
             <FormItem {...formItemLayout} label='用户账号'>
               {
                 getFieldDecorator('userAccount', {
-                  initialValue: object.userAccount
+                  initialValue: object.userAccount,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户名称'>
               {
                 getFieldDecorator('userName', {
-                  initialValue: object.userName
+                  initialValue: object.userName,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
@@ -199,11 +274,27 @@ class UserForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='用户头像地址'>
+            <FormItem {...formItemLayout} label='用户头像'>
               {
+                beanStatus === 'add' &&
                 getFieldDecorator('userImageUrl', {
-                  initialValue: object.userImageUrl
-                })(<Input placeholder='' />)
+                  initialValue: object.userImageUrl,
+                  valuePropName: 'fileList',
+                  getValueFromEvent: this.handleSelectImage,
+                })(
+                  <Upload accept="image/*" multiple={false} listType="picture">
+                    {
+                      (!getFieldValue('userImageUrl') || getFieldValue('userImageUrl').length === 0) &&
+                      <Button>
+                        <Icon type="upload" /> 点击上传
+                      </Button>
+                    }
+                  </Upload>
+                )
+              }
+              {
+                beanStatus === 'update' &&
+                  <Avatar src={object.userImageUrl} size='large' shape='square' />
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户描述'>
@@ -213,46 +304,28 @@ class UserForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='初始密码更改日期'>
-              {
-                getFieldDecorator('userPasswordChanged', {
-                  initialValue: moment(object.userPasswordChanged)
-                })(<DatePicker placeholder='' />)
-              }
-            </FormItem>
             <FormItem {...formItemLayout} label='是否有效'>
               {
                 getFieldDecorator('valid', {
                   initialValue: object.valid
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='启用日期'>
-              {
-                getFieldDecorator('userEnabledDate', {
-                  initialValue: moment(object.userEnabledDate)
-                })(<DatePicker placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='失效日期'>
-              {
-                getFieldDecorator('userDisabledDate', {
-                  initialValue: moment(object.userDisabledDate)
-                })(<DatePicker placeholder='' />)
+                })(
+                  <Select>
+                    <Option value='Y'>是</Option>
+                    <Option value='N'>否</Option>
+                  </Select>
+                )
               }
             </FormItem>
             <FormItem {...formItemLayout} label='账号是否锁定'>
               {
                 getFieldDecorator('userAccountLocked', {
                   initialValue: object.userAccountLocked
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='最后登录时间'>
-              {
-                getFieldDecorator('lastLoginDate', {
-                  initialValue: moment(object.lastLoginDate)
-                })(<DatePicker placeholder='' />)
+                })(
+                  <Select>
+                    <Option value='Y'>是</Option>
+                    <Option value='N'>否</Option>
+                  </Select>
+                )
               }
             </FormItem>
             <FormItem {...formItemLayout} label='创建时间'>
@@ -262,13 +335,6 @@ class UserForm extends PureComponent {
                 })(<DatePicker placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='创建人'>
-              {
-                getFieldDecorator('createPerson', {
-                  initialValue: object.createPerson
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
             <FormItem {...formItemLayout} label='修改时间'>
               {
                 getFieldDecorator('modifyTime', {
@@ -276,39 +342,23 @@ class UserForm extends PureComponent {
                 })(<DatePicker placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='修改人'>
-              {
-                getFieldDecorator('modifyPerson', {
-                  initialValue: object.modifyPerson
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
             <FormItem {...formItemLayout} label='用户性别'>
               {
                 getFieldDecorator('userSex', {
                   initialValue: object.userSex
-                })(<Input placeholder='' />)
+                })(
+                  <Select>
+                    <Option value='MAN'>男</Option>
+                    <Option value='WOMAN'>女</Option>
+                  </Select>
+                )
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户类型'>
               {
                 getFieldDecorator('userType', {
                   initialValue: object.userType
-                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleUserTypeClick} />} />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='盐值'>
-              {
-                getFieldDecorator('salt', {
-                  initialValue: object.salt
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='留言'>
-              {
-                getFieldDecorator('words', {
-                  initialValue: object.words
-                })(<Input placeholder='' />)
+                })(<Input disabled placeholder='' addonAfter={<Icon type='search' onClick={this.handleUserTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='校园短号'>
@@ -318,22 +368,25 @@ class UserForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem>
-              {
-                getFieldDecorator('roleId', {
-                  initialValue: object.roleId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldValue('userType') === 'ADMIN' &&
+                <FormItem {...formItemLayout} label='角色编码'>
+                  {
+                    getFieldDecorator('roleId', {
+                      initialValue: object.roleId,
+                      rules: [{required: true, message: '必填项'}]
+                    })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleRoleIdClick}/>} />)
+                  }
+                </FormItem>
+            }
           </Form>
         </Card>
-        <Card title='用户所属组织管理' style={{marginTop: '20px'}}>
-          {
-            getFieldDecorator('userOrgs', {
-              initialValue: object.userOrgs || []
-            })(<UserOrgTableForm />)
-          }
-        </Card>
+        {
+          beanStatus === 'update' &&
+            <Card title='用户所属组织管理' style={{marginTop: '20px'}}>
+              <UserOrgTableForm param={{userId: params.userId || object.userId}} triggerRef={(value) => this.child = value} />
+            </Card>
+        }
         <FooterToolbar style={{width: '100%'}}>
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />

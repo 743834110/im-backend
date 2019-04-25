@@ -1,9 +1,9 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryUserOrg, removeUserOrg, addUserOrg, updateUserOrg, queryById } from '../../../services/userOrg';
+import { queryAuth, removeAuth, addAuth, updateAuth, queryById, editAuth } from '../services/auth';
 
 export default {
-  namespace: '_userOrg',
+  namespace: '_auth',
 
   state: {
     // 列表
@@ -18,7 +18,7 @@ export default {
   effects: {
     // 批量提取
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryUserOrg, payload);
+      const response = yield call(queryAuth, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -34,9 +34,9 @@ export default {
     },
 
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addUserOrg, payload);
+      const response = yield call(addAuth, payload);
       yield put({
-        type: 'saveList',
+        type: 'saveObject',
         payload: response,
       });
       if (response.status >= 200 && response.status < 300) {
@@ -45,7 +45,7 @@ export default {
       }
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeUserOrg, payload);
+      const response = yield call(removeAuth, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -55,7 +55,7 @@ export default {
       }
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateUserOrg, payload);
+      const response = yield call(updateAuth, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -64,6 +64,14 @@ export default {
         message.success("完成更新");
         if (callback) callback();
       }
+    },
+    // 暂不将数据更新到state当中，由页面进行数据的刷新
+    *edit({ payload, callback }, { call, put }) {
+      const response = yield call(editAuth, payload);
+      if (response.status >= 200 && response.status < 300) {
+        message.success("子表完成更新");
+        if (callback) callback(response);
+      } 
     }
   },
 
@@ -78,7 +86,7 @@ export default {
     saveList(state, action) {
       // 此处添加key是用于table内部优化处理
       const list = action.payload.data.result.map(value => ({
-        key: value.userOrgId,
+        key: value.authId,
         ...value
       }))
       const data = {

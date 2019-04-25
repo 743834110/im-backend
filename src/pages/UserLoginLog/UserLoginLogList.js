@@ -63,19 +63,17 @@ class UserLoginLogList extends PureComponent {
         dataIndex: 'userAccount'
       },
       {
-        title: '会话ID',
-        dataIndex: 'sessionId'
-      },
-      {
         title: '退出时间',
-        dataIndex: 'logoutTime'
+        dataIndex: 'logoutTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: 'IP地址',
         dataIndex: 'userIp'
       },
       {
-        title: '${column.comment}',
+        title: '令牌',
         dataIndex: 'token'
       },
       {
@@ -84,8 +82,6 @@ class UserLoginLogList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.loginLogId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -129,7 +125,9 @@ class UserLoginLogList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -199,6 +197,10 @@ class UserLoginLogList extends PureComponent {
             loginLogIds: selectedRows.map(row => row.loginLogId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_userLoginLog/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });
@@ -321,7 +323,7 @@ class UserLoginLogList extends PureComponent {
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="令牌">
               {getFieldDecorator('token')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

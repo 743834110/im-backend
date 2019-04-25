@@ -59,16 +59,12 @@ class RoutineList extends PureComponent {
      */
     columns: [
       {
-        title: '用户名称',
+        title: '发布用户名',
         dataIndex: 'userName'
       },
       {
         title: '日常活动类型',
         dataIndex: 'routineType'
-      },
-      {
-        title: '日常活动内容',
-        dataIndex: 'content'
       },
       {
         title: '创建时间',
@@ -77,33 +73,11 @@ class RoutineList extends PureComponent {
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
-        title: '用户类型',
-        dataIndex: 'userType'
-      },
-      {
-        title: '活动截止日期',
-        dataIndex: 'endTime',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '活动是否截止',
-        dataIndex: 'end'
-      },
-      {
-        title: '可见年级',
-        dataIndex: 'grade'
-      },
-      {
-        title: '可见范围',
-        dataIndex: 'visibility'
-      },
-      {
         title: '日常活动标题',
         dataIndex: 'title'
       },
       {
-        title: '组织名称',
+        title: '发布组织名称',
         dataIndex: 'orgName'
       },
       {
@@ -444,9 +418,9 @@ class RoutineList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.newItem()}>
-                新建
-              </Button>
+              {/*<Button icon="plus" type="primary" onClick={() => this.newItem()}>*/}
+                {/*新建*/}
+              {/*</Button>*/}
               {selectedRows.length > 0 && (
                 <span>
                   <Button>批量操作</Button>

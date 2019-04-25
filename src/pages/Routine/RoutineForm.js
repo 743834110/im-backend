@@ -86,8 +86,10 @@ class RoutineForm extends PureComponent {
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update',
+            })
           }
         });
       }
@@ -221,7 +223,13 @@ class RoutineForm extends PureComponent {
               {
                 getFieldDecorator('content', {
                   initialValue: object.content
-                })(<Input placeholder='' />)
+                })(
+                  <TextArea
+                    style={{ minHeight: 32 }}
+                    placeholder={formatMessage({ id: 'form.standard.placeholder' })}
+                    rows={4}
+                  />
+                )
               }
             </FormItem>
             <FormItem {...formItemLayout} label='创建时间'>

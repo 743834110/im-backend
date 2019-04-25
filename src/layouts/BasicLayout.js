@@ -113,14 +113,14 @@ class BasicLayout extends React.Component {
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (
       <Layout>
-          <SiderMenu
-            logo={logo}
-            theme={navTheme}
-            onCollapse={this.handleMenuCollapse}
-            menuData={menuData}
-            isMobile={isMobile}
-            {...this.props}
-          />
+        <SiderMenu
+          logo={logo}
+          theme={navTheme}
+          onCollapse={this.handleMenuCollapse}
+          menuData={menuData}
+          isMobile={isMobile}
+          {...this.props}
+        />
         <Layout
           style={{
             ...this.getLayoutStyle(),

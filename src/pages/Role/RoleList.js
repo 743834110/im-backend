@@ -75,15 +75,7 @@ class RoleList extends PureComponent {
         dataIndex: 'roleNumber'
       },
       {
-        title: '创建用户编号',
-        dataIndex: 'userId'
-      },
-      {
-        title: '创建组织编号',
-        dataIndex: 'orgId'
-      },
-      {
-        title: '角色所属平台：backend | app',
+        title: '角色所属平台',
         dataIndex: 'platform'
       },
       {
@@ -92,8 +84,6 @@ class RoleList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.roleId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -137,7 +127,9 @@ class RoleList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -207,6 +199,10 @@ class RoleList extends PureComponent {
             roleIds: selectedRows.map(row => row.roleId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_role/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });
@@ -341,7 +337,7 @@ class RoleList extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="角色所属平台：backend | app">
+            <FormItem label="角色所属平台">
               {getFieldDecorator('platform')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

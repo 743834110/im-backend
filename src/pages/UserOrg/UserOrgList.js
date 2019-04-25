@@ -67,7 +67,7 @@ class UserOrgList extends PureComponent {
         dataIndex: 'orgType'
       },
       {
-        title: '年级（在org_type为class类型是不能为空）',
+        title: '年级',
         dataIndex: 'grade'
       },
       {
@@ -75,12 +75,16 @@ class UserOrgList extends PureComponent {
         dataIndex: 'orgName'
       },
       {
-        title: '用户图像url',
-        dataIndex: 'userImageUrl'
-      },
-      {
         title: '组织简称',
         dataIndex: 'shortName'
+      },
+      {
+        title: '角色名称',
+        dataIndex: 'roleName'
+      },
+      {
+        title: '用户账号',
+        dataIndex: 'userAccount'
       },
       {
         title: '操作',
@@ -341,7 +345,7 @@ class UserOrgList extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="年级（在org_type为class类型是不能为空）">
+            <FormItem label="年级">
               {getFieldDecorator('grade')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
@@ -360,6 +364,16 @@ class UserOrgList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="组织简称">
               {getFieldDecorator('shortName')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+          <Col md={8} sm={24}>
+            <FormItem label="角色名称">
+              {getFieldDecorator('roleName')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>       
+          <Col md={8} sm={24}>
+            <FormItem label="用户账号">
+              {getFieldDecorator('userAccount')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>

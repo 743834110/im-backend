@@ -60,6 +60,7 @@ if (APP_TYPE === 'site') {
 
 export default {
   // add for transfer to umi
+  history: 'hash',
   plugins,
   define: {
     APP_TYPE: APP_TYPE || '',
@@ -80,11 +81,11 @@ export default {
     bizcharts: 'BizCharts',
   },
   proxy: {
-    '/rest/': {
-      target: 'http://localhost:8080/',
-      changeOrigin: true,
-      // pathRewrite: { '^/server': '' },
-    },
+    // '/rest/': {
+    //   target: 'http://localhost:8888/',
+    //   changeOrigin: true,
+    //   // pathRewrite: { '^/server': '' },
+    // },
   },
   ignoreMomentLocale: true,
   lessLoaderOptions: {

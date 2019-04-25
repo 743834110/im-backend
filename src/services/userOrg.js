@@ -71,3 +71,17 @@ export async function updateUserOrg(params = {}) {
     },
   });
 }
+
+/**
+ * 编辑userOrg，通常出现在对字表的编辑中
+ * @param params
+ * @return {Promise<Object>}
+ */
+export async function editUserOrg(params = {}) {
+  return request(`/rest/adminUserOrgService/editByInputBean`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}

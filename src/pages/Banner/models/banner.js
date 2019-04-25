@@ -20,7 +20,7 @@ export default {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryBanner, payload);
       yield put({
-        type: 'saveList',
+        type: 'saveObject',
         payload: response,
       });
     },

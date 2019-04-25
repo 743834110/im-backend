@@ -35,7 +35,7 @@ export default {
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addDictionaryType, payload);
       yield put({
-        type: 'saveList',
+        type: 'saveObject',
         payload: response,
       });
       if (response.status >= 200 && response.status < 300) {

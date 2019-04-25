@@ -47,50 +47,24 @@ class SelectOrganization extends PureComponent {
      * @type {*[]}
      */
     columns: [
-                  {
+      {
         title: '组织类型',
         dataIndex: 'orgType'
       },
-          {
-        title: '专业类型',
-        dataIndex: 'proType'
-      },
-          {
-        title: '组织描述',
-        dataIndex: 'orgDescription'
-      },
-          {
+      {
         title: '组织名称',
         dataIndex: 'orgName'
       },
-          {
-        title: '组织头像地址',
-        dataIndex: 'orgImageUrl'
-      },
-          {
-        title: '组织公告',
-        dataIndex: 'orgAnnounce'
-      },
-          {
-        title: '是否有效',
-        dataIndex: 'valid'
-      },
-                  {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
+      {
         title: '年级',
         dataIndex: 'grade'
       },
-          {
-        title: '${column.comment}',
+      {
+        title: '组织简称',
         dataIndex: 'shortName'
       },
-          {
-        title: '${column.comment}',
+      {
+        title: '社团类型',
         dataIndex: 'associateType'
       },
     ]
@@ -330,14 +304,14 @@ class SelectOrganization extends PureComponent {
             </FormItem>
           </Col>       
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="组织简称">
               {getFieldDecorator('shortName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="社团类型">
               {getFieldDecorator('associateType')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

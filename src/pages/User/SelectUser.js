@@ -47,107 +47,37 @@ class SelectUser extends PureComponent {
      * @type {*[]}
      */
     columns: [
-          {
+      {
         title: '用户账号',
         dataIndex: 'userAccount'
       },
-          {
-        title: '用户密码',
-        dataIndex: 'userPassword'
-      },
-          {
+      {
         title: '用户名称',
         dataIndex: 'userName'
       },
-          {
-        title: '手机号',
-        dataIndex: 'userMobile'
-      },
-          {
-        title: 'QQ邮箱',
-        dataIndex: 'userEmail'
-      },
-          {
-        title: '用户头像地址',
-        dataIndex: 'userImageUrl'
-      },
-          {
-        title: '用户描述',
-        dataIndex: 'userDescription'
-      },
-          {
-        title: '初始密码更改日期',
-        dataIndex: 'userPasswordChanged',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
+      {
         title: '是否有效',
         dataIndex: 'valid'
       },
-          {
-        title: '启用日期',
-        dataIndex: 'userEnabledDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
-        title: '失效日期',
-        dataIndex: 'userDisabledDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
+      {
         title: '账号是否锁定',
         dataIndex: 'userAccountLocked'
       },
-          {
-        title: '最后登录时间',
-        dataIndex: 'lastLoginDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
+      {
         title: '创建时间',
         dataIndex: 'createTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
-          {
-        title: '创建人',
-        dataIndex: 'createPerson'
-      },
-          {
-        title: '修改时间',
-        dataIndex: 'modifyTime',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-          {
-        title: '修改人',
-        dataIndex: 'modifyPerson'
-      },
-          {
+      {
         title: '用户性别',
         dataIndex: 'userSex'
       },
-          {
+      {
         title: '用户类型',
         dataIndex: 'userType'
-      },
-          {
-        title: '盐值',
-        dataIndex: 'salt'
-      },
-          {
-        title: '留言',
-        dataIndex: 'words'
-      },
-          {
-        title: '校园短号',
-        dataIndex: 'userShortMobile'
-      },
-            ]
+      }
+    ]
   };
 
 

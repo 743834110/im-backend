@@ -89,8 +89,10 @@ class DictionaryForm extends PureComponent {
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update'
+            })
           }
         });
       }
@@ -109,9 +111,7 @@ class DictionaryForm extends PureComponent {
    * 打开选择对话框
    */
   handleSelectEntity = () => {
-
     let modal;
-
     /**
      * 数据回调，设置表单的值
      * @param res
@@ -181,21 +181,24 @@ class DictionaryForm extends PureComponent {
             <FormItem {...formItemLayout} label='分类编号'>
               {
                 getFieldDecorator('codeItemId', {
-                  initialValue: object.codeItemId
+                  initialValue: object.codeItemId,
+                  rules: [{required: true, message: "必选项"}]
                 })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleSelectEntity} />}   />)
               }
             </FormItem>  
             <FormItem {...formItemLayout} label='具体分类编号'>
               {
                 getFieldDecorator('codeId', {
-                  initialValue: object.codeId
+                  initialValue: object.codeId,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>  
             <FormItem {...formItemLayout} label='具体分类名称'>
               {
                 getFieldDecorator('codeName', {
-                  initialValue: object.codeName
+                  initialValue: object.codeName,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
@@ -206,25 +209,11 @@ class DictionaryForm extends PureComponent {
                 })(<DatePicker placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='创建人ID'>
-              {
-                getFieldDecorator('createPerson', {
-                  initialValue: object.createPerson
-                })(<Input placeholder='' />)
-              }
-            </FormItem>
             <FormItem {...formItemLayout} label='修改时间'>
               {
                 getFieldDecorator('modifyTime', {
                   initialValue: moment(object.modifyTime)
                 })(<DatePicker placeholder='' />)
-              }
-            </FormItem>
-            <FormItem {...formItemLayout} label='修改人ID'>
-              {
-                getFieldDecorator('modifyPerson', {
-                  initialValue: object.modifyPerson
-                })(<Input placeholder='' />)
               }
             </FormItem>
             <FormItem>

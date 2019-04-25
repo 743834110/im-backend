@@ -49,34 +49,92 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     Routes: ['src/pages/Authorized'],
+    authority: ['ROOT'],
     routes: [
-      {path: '/', redirect: '/list/tableList'},
-      {
-        path: '/list/tableList',
-        name: 'list',
-        icon: 'table',
-        component: './List/TableList',
-      },
+      {path: '/', redirect: '/user/userList'},
       {
         path: '/user',
-        icon: 'user',
+        icon: 'usergroup-add',
         name: 'user',
         routes: [
           {
+            // 临时处理
+            path: '/user/login',
+            redirect: '/access/login'
+          },
+          {
             path: '/user/userList',
             name: 'userList',
+            authority: ['ROOT'],
             component: './User/UserList'
           },
           {
             path: '/user/userForm/',
             name: 'userForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './User/UserForm'
           },
           {
             path: '/user/userForm/:userId',
             hideInMenu: true,
             name: 'userForm',
+            authority: ['ROOT'],
             component: './User/UserForm'
+          }
+        ]
+      },
+      {
+        path: '/organization',
+        icon: 'organization',
+        name: 'organization',
+        routes: [
+          {
+            path: '/organization/organizationList',
+            name: 'organizationList',
+            authority: ['ROOT'],
+            component: './Organization/OrganizationList'
+          },
+          {
+            path: '/organization/organizationForm/',
+            name: 'organizationForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
+            component: './Organization/OrganizationForm'
+          },
+          {
+            path: '/organization/organizationForm/:orgId',
+            hideInMenu: true,
+            name: 'organizationForm',
+            authority: ['ROOT'],
+            component: './Organization/OrganizationForm'
+          }
+        ]
+      },
+      {
+        path: '/userOrg',
+        icon: 'userOrg',
+        name: 'userOrg',
+        routes: [
+          {
+            path: '/userOrg/userOrgList',
+            name: 'userOrgList',
+            authority: ['ROOT'],
+            component: './UserOrg/UserOrgList'
+          },
+          {
+            path: '/userOrg/userOrgForm/',
+            name: 'userOrgForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
+            component: './UserOrg/UserOrgForm'
+          },
+          {
+            path: '/userOrg/userOrgForm/:userOrgId',
+            hideInMenu: true,
+            name: 'userOrgForm',
+            authority: ['ROOT'],
+            component: './UserOrg/UserOrgForm'
           }
         ]
       },
@@ -88,17 +146,21 @@ export default [
           {
             path: '/auth/authList',
             name: 'authList',
+            authority: ['ROOT'],
             component: './Auth/AuthList'
           },
           {
             path: '/auth/authForm/',
             name: 'authForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './Auth/AuthForm'
           },
           {
             path: '/auth/authForm/:authId',
             hideInMenu: true,
             name: 'authForm',
+            authority: ['ROOT'],
             component: './Auth/AuthForm'
           }
         ]
@@ -111,64 +173,22 @@ export default [
           {
             path: '/role/roleList',
             name: 'roleList',
+            authority: ['ROOT'],
             component: './Role/RoleList'
           },
           {
             path: '/role/roleForm/',
             name: 'roleForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './Role/RoleForm'
           },
           {
             path: '/role/roleForm/:roleId',
             hideInMenu: true,
             name: 'roleForm',
+            authority: ['ROOT'],
             component: './Role/RoleForm'
-          }
-        ]
-      },
-      {
-        path: '/userOrgRole',
-        icon: 'userOrgRole',
-        name: 'userOrgRole',
-        routes: [
-          {
-            path: '/userOrgRole/userOrgRoleList',
-            name: 'userOrgRoleList',
-            component: './UserOrgRole/UserOrgRoleList'
-          },
-          {
-            path: '/userOrgRole/userOrgRoleForm/',
-            name: 'userOrgRoleForm',
-            component: './UserOrgRole/UserOrgRoleForm'
-          },
-          {
-            path: '/userOrgRole/userOrgRoleForm/:userOrgRoleId',
-            hideInMenu: true,
-            name: 'userOrgRoleForm',
-            component: './UserOrgRole/UserOrgRoleForm'
-          }
-        ]
-      },
-      {
-        path: '/organization',
-        icon: 'organization',
-        name: 'organization',
-        routes: [
-          {
-            path: '/organization/organizationList',
-            name: 'organizationList',
-            component: './Organization/OrganizationList'
-          },
-          {
-            path: '/organization/organizationForm/',
-            name: 'organizationForm',
-            component: './Organization/OrganizationForm'
-          },
-          {
-            path: '/organization/organizationForm/:orgId',
-            hideInMenu: true,
-            name: 'organizationForm',
-            component: './Organization/OrganizationForm'
           }
         ]
       },
@@ -180,17 +200,21 @@ export default [
           {
             path: '/routine/routineList',
             name: 'routineList',
+            authority: ['ROOT'],
             component: './Routine/RoutineList'
           },
           {
             path: '/routine/routineForm/',
             name: 'routineForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './Routine/RoutineForm'
           },
           {
             path: '/routine/routineForm/:routineId',
             hideInMenu: true,
             name: 'routineForm',
+            authority: ['ROOT'],
             component: './Routine/RoutineForm'
           }
         ]
@@ -203,17 +227,21 @@ export default [
           {
             path: '/dictionary/dictionaryList',
             name: 'dictionaryList',
+            authority: ['ROOT'],
             component: './Dictionary/DictionaryList'
           },
           {
             path: '/dictionary/dictionaryForm/',
             name: 'dictionaryForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './Dictionary/DictionaryForm'
           },
           {
             path: '/dictionary/dictionaryForm/:dictionaryId',
             hideInMenu: true,
             name: 'dictionaryForm',
+            authority: ['ROOT'],
             component: './Dictionary/DictionaryForm'
           }
         ]
@@ -226,41 +254,22 @@ export default [
           {
             path: '/dictionaryType/dictionaryTypeList',
             name: 'dictionaryTypeList',
+            authority: ['ROOT'],
             component: './DictionaryType/DictionaryTypeList'
           },
           {
             path: '/dictionaryType/dictionaryTypeForm/',
             name: 'dictionaryTypeForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './DictionaryType/DictionaryTypeForm'
           },
           {
             path: '/dictionaryType/dictionaryTypeForm/:codeItemId',
             hideInMenu: true,
             name: 'dictionaryTypeForm',
+            authority: ['ROOT'],
             component: './DictionaryType/DictionaryTypeForm'
-          }
-        ]
-      },
-      {
-        path: '/userOrg',
-        icon: 'userOrg',
-        name: 'userOrg',
-        routes: [
-          {
-            path: '/userOrg/userOrgList',
-            name: 'userOrgList',
-            component: './UserOrg/UserOrgList'
-          },
-          {
-            path: '/userOrg/userOrgForm/',
-            name: 'userOrgForm',
-            component: './UserOrg/UserOrgForm'
-          },
-          {
-            path: '/userOrg/userOrgForm/:userOrgId',
-            hideInMenu: true,
-            name: 'userOrgForm',
-            component: './UserOrg/UserOrgForm'
           }
         ]
       },
@@ -272,17 +281,21 @@ export default [
           {
             path: '/chatGroup/chatGroupList',
             name: 'chatGroupList',
+            authority: ['ROOT'],
             component: './ChatGroup/ChatGroupList'
           },
           {
             path: '/chatGroup/chatGroupForm/',
             name: 'chatGroupForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './ChatGroup/ChatGroupForm'
           },
           {
             path: '/chatGroup/chatGroupForm/:groupId',
             hideInMenu: true,
             name: 'chatGroupForm',
+            authority: ['ROOT'],
             component: './ChatGroup/ChatGroupForm'
           }
         ]
@@ -295,42 +308,64 @@ export default [
           {
             path: '/workGroupMember/workGroupMemberList',
             name: 'workGroupMemberList',
+            authority: ['ROOT'],
             component: './WorkGroupMember/WorkGroupMemberList'
           },
           {
             path: '/workGroupMember/workGroupMemberForm/',
             name: 'workGroupMemberForm',
+            hideInMenu: true,
+            authority: ['ROOT'],
             component: './WorkGroupMember/WorkGroupMemberForm'
           },
           {
             path: '/workGroupMember/workGroupMemberForm/:memberId',
             hideInMenu: true,
             name: 'workGroupMemberForm',
+            authority: ['ROOT'],
             component: './WorkGroupMember/WorkGroupMemberForm'
           }
         ]
       },
       {
-        path: '/form',
-        icon: 'form',
-        name: 'form',
+        path: '/userLoginLog',
+        icon: 'userLoginLog',
+        name: 'userLoginLog',
         routes: [
           {
-            path: '/form/basic-form',
-            name: 'basicform',
-            component: './Forms/BasicForm',
-          },
+            path: '/userLoginLog/userLoginLogList',
+            name: 'userLoginLogList',
+            authority: ['ROOT'],
+            component: './UserLoginLog/UserLoginLogList'
+          }
+        ]
+      },
+      {
+        path: '/file',
+        icon: 'file',
+        name: 'file',
+        routes: [
           {
-            path: '/form/basic-form/:id',
-            name: 'basicform',
-            hideInMenu:true,
-            component: './Forms/BasicForm',
-          },
+            path: '/file/fileList',
+            name: 'fileList',
+            authority: ['ROOT'],
+            component: './File/FileList'
+          }
+        ]
+      },
+      {
+        path: '/account',
+        icon: 'user',
+        name: 'personal',
+        authority: ['ROOT'],
+        component: './Account/Settings/Info',
+        routes: [
           {
-            path: '/form/advanced-form/:id',
-            name: 'advancedform',
-            component: './Forms/AdvancedForm',
-          },
+            path: '/account/base',
+            name: 'base',
+            authority: ['ROOT'],
+            component: './Account/Settings/BaseView'
+          }
         ]
       }
     ]

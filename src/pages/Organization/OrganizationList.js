@@ -63,46 +63,12 @@ class OrganizationList extends PureComponent {
         dataIndex: 'orgType'
       },
       {
-        title: '专业类型',
-        dataIndex: 'proType'
-      },
-      {
-        title: '组织描述',
-        dataIndex: 'orgDescription'
-      },
-      {
         title: '组织名称',
         dataIndex: 'orgName'
       },
       {
-        title: '组织头像地址',
-        dataIndex: 'orgImageUrl'
-      },
-      {
-        title: '组织公告',
-        dataIndex: 'orgAnnounce'
-      },
-      {
-        title: '是否有效',
-        dataIndex: 'valid'
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '年级',
-        dataIndex: 'grade'
-      },
-      {
         title: '组织简称',
         dataIndex: 'shortName'
-      },
-      {
-        title: '专业类型',
-        dataIndex: 'associateType'
       },
       {
         title: '操作',

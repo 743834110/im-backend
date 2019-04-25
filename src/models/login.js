@@ -1,4 +1,5 @@
 import { routerRedux } from 'dva/router';
+import { notification } from 'antd';
 import { stringify } from 'qs';
 import { accountLogin, getFakeCaptcha } from '../services/api';
 import { setAuthority } from '../utils/authority';
@@ -17,10 +18,14 @@ export default {
       const response = yield call(accountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: {
+          currentAuthority: response.data.roleList.map(role => role.roleName),
+          status: true,
+        },
       });
-      // Login successfully 属性：currentAuthority带有权限。
-      if (response.status === 'ok') {
+      console.log(response);
+      // Login successfully 属性：currentAuthority带有权限,自带重定向功能
+      if (response.status === 200) {
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -39,6 +44,12 @@ export default {
         }
         yield put(routerRedux.replace(redirect || '/'));
       }
+      else {
+        notification.error({
+          message: `请求错误`,
+          description: "用户名或密码错误",
+        });
+      }
     },
 
     *getCaptcha({ payload }, { call }) {
@@ -56,7 +67,7 @@ export default {
       reloadAuthorized();
       yield put(
         routerRedux.push({
-          pathname: '/user/login',
+          pathname: '/access/login',
           search: stringify({
             redirect: window.location.href,
           }),

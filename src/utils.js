@@ -192,3 +192,17 @@ export const importCDN = (url, name) =>
     };
     document.head.appendChild(dom);
   });
+
+/**
+ * 上传文件工具函数
+ * @param dispatch {Function}
+ * @param fileData {FormData}
+ * @param callback {Function}
+ */
+export const uploadFile = (dispatch, fileData, callback) => {
+  dispatch({
+    type: '_file/upload',
+    payload: fileData,
+    callback
+  })
+};

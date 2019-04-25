@@ -77,18 +77,10 @@ class DictionaryList extends PureComponent {
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
-        title: '创建人ID',
-        dataIndex: 'createPerson'
-      },
-      {
         title: '修改时间',
         dataIndex: 'modifyTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '修改人ID',
-        dataIndex: 'modifyPerson'
       },
       {
         title: '操作',

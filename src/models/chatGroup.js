@@ -1,9 +1,9 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryAuth, removeAuth, addAuth, updateAuth, queryById } from '../../../services/auth';
+import { queryChatGroup, removeChatGroup, addChatGroup, updateChatGroup, queryById } from '../services/chatGroup';
 
 export default {
-  namespace: '_auth',
+  namespace: '_chatGroup',
 
   state: {
     // 列表
@@ -18,7 +18,7 @@ export default {
   effects: {
     // 批量提取
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryAuth, payload);
+      const response = yield call(queryChatGroup, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -34,7 +34,7 @@ export default {
     },
 
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addAuth, payload);
+      const response = yield call(addChatGroup, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -45,7 +45,7 @@ export default {
       }
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeAuth, payload);
+      const response = yield call(removeChatGroup, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -55,7 +55,7 @@ export default {
       }
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateAuth, payload);
+      const response = yield call(updateChatGroup, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -78,7 +78,7 @@ export default {
     saveList(state, action) {
       // 此处添加key是用于table内部优化处理
       const list = action.payload.data.result.map(value => ({
-        key: value.authId,
+        key: value.groupId,
         ...value
       }))
       const data = {

@@ -14,9 +14,7 @@ import {
   Button,
   Dropdown,
   Menu,
-  InputNumber,
-  DatePicker,
-  Divider
+  Avatar
 } from 'antd';
 import StandardTable from '../../components/StandardTable';
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
@@ -59,12 +57,17 @@ class ChatGroupList extends PureComponent {
      */
     columns: [
       {
-        title: '群组名称',
-        dataIndex: 'name'
+        title: '群头像',
+        dataIndex: 'avatar',
+        render: (value) => {
+          return (
+            <Avatar size='large' shape='square' src={value} />
+          )
+        }
       },
       {
-        title: '${column.comment}',
-        dataIndex: 'avatar'
+        title: '群组名称',
+        dataIndex: 'name'
       },
       {
         title: '操作',
@@ -308,7 +311,7 @@ class ChatGroupList extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="群头像">
               {getFieldDecorator('avatar')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

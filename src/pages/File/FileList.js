@@ -14,10 +14,8 @@ import {
   Button,
   Dropdown,
   Menu,
-  InputNumber,
-  DatePicker,
-  Divider
 } from 'antd';
+import Ellipsis from '../../components/Ellipsis'
 import StandardTable from '../../components/StandardTable';
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../TableList.less';
@@ -60,39 +58,22 @@ class FileList extends PureComponent {
     columns: [
       {
         title: '原文件名',
-        dataIndex: 'originName'
+        dataIndex: 'originName',
+        render: value => <Ellipsis length={20} fullWidthRecognition tooltip>{value}</Ellipsis>
       },
       {
         title: '文件大小(byte)',
-        dataIndex: 'fileSize'
+        dataIndex: 'fileSize',
       },
       {
         title: '上传时间',
-        dataIndex: 'createTime'
-      },
-      {
-        title: '业务ID',
-        dataIndex: 'busiId'
-      },
-      {
-        title: '业务表名称',
-        dataIndex: 'compId'
+        dataIndex: 'createTime',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
       },
       {
         title: 'mime类型',
         dataIndex: 'mimeType'
-      },
-      {
-        title: '创建者ID',
-        dataIndex: 'userId'
-      },
-      {
-        title: '是否有效',
-        dataIndex: 'valid'
-      },
-      {
-        title: '文件相对路径',
-        dataIndex: 'filePath'
       },
       {
         title: '操作',
@@ -100,8 +81,6 @@ class FileList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.fileId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -145,7 +124,9 @@ class FileList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -215,6 +196,10 @@ class FileList extends PureComponent {
             fileIds: selectedRows.map(row => row.fileId).join(','),
           },
           callback: () => {
+            dispatch({
+              type: '_file/fetch',
+              payload: {},
+            });
             this.setState({
               selectedRows: [],
             });

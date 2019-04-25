@@ -21,8 +21,6 @@ import FooterToolbar from "../../components/FooterToolbar";
 import SelectEntityModal from "../../components/SelectEntityModal";
 import {generateDynamicElement} from "../../utils/utils";
 import SelectDictionary from "../Dictionary/SelectDictionary";
-import SelectUser from "../User/SelectUser";
-import SelectOrganization from "../Organization/SelectOrganization";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -89,8 +87,10 @@ class UserOrgForm extends PureComponent {
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update'
+            })
           }
         });
       }
@@ -106,37 +106,9 @@ class UserOrgForm extends PureComponent {
 
 
   /**
-   * 处理组织点击事件
+   * 处理组织类型点击事件
    */
-  handleOrgClick = () => {
-    let modal;
-    /**
-     * 数据回调，设置表单的值
-     */
-    const {form: {setFieldsValue, getFieldValue}} = this.props;
-    const handleModalOk = (res) => {
-      modal.destory();
-      if (!res || res.constructor !== Array || res.length === 0) {
-        return;
-      }
-      console.log(res[0]);
-      setFieldsValue({
-        ...res[0],
-        parentOrgId: res[0].parentId,
-      });
-    };
-    const orgId = getFieldValue('orgId');
-    modal = generateDynamicElement(
-      <SelectEntityModal handleOk={handleModalOk} param={{orgId}}>
-        <SelectOrganization />
-      </SelectEntityModal>
-    );
-  };
-
-  /**
-   * 选择学生
-   */
-  handleUserClick = () => {
+  handleOrgTypeClick = () => {
     let modal;
     /**
      * 数据回调，设置表单的值
@@ -148,18 +120,16 @@ class UserOrgForm extends PureComponent {
         return;
       }
       setFieldsValue({
-        'userName': res[0].userName,
-        'userId': res[0].userId
+        'orgType': res[0].codeId
       });
     };
-    const userName = getFieldValue('userName');
-    const userId = getFieldValue('userId');
+    const codeId = getFieldValue('orgType');
     modal = generateDynamicElement(
-      <SelectEntityModal handleOk={handleModalOk} param={{userName, userId}}>
-        <SelectUser />
+      <SelectEntityModal handleOk={handleModalOk} param={{codeItemId: 'ORG', codeId}}>
+        <SelectDictionary />
       </SelectEntityModal>
     );
-  };
+  };  
 
 
   render() {
@@ -216,7 +186,7 @@ class UserOrgForm extends PureComponent {
               {
                 getFieldDecorator('userName', {
                   initialValue: object.userName
-                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleUserClick}/>} />)
+                })(<Input placeholder='' />)
               }
             </FormItem>
             {
@@ -229,11 +199,11 @@ class UserOrgForm extends PureComponent {
                 initialValue: object.parentOrgId
               })(<Input type='hidden' placeholder='' />)
             }
-            <FormItem {...formItemLayout} label='组织类型'>
+            <FormItem {...formItemLayout} label='组织类型' >
               {
                 getFieldDecorator('orgType', {
                   initialValue: object.orgType
-                })(<Input placeholder='' disabled />)
+                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleOrgTypeClick} />} />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='年级'>
@@ -247,7 +217,7 @@ class UserOrgForm extends PureComponent {
               {
                 getFieldDecorator('orgName', {
                   initialValue: object.orgName
-                })(<Input placeholder='' disabled addonAfter={<Icon type='search' onClick={this.handleOrgClick} />} />)
+                })(<Input placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='用户图像url'>
@@ -261,6 +231,20 @@ class UserOrgForm extends PureComponent {
               {
                 getFieldDecorator('shortName', {
                   initialValue: object.shortName
+                })(<Input placeholder='' />)
+              }
+            </FormItem>
+            <FormItem {...formItemLayout} label='角色名称'>
+              {
+                getFieldDecorator('roleName', {
+                  initialValue: object.roleName
+                })(<Input placeholder='' />)
+              }
+            </FormItem>
+            <FormItem {...formItemLayout} label='用户账号'>
+              {
+                getFieldDecorator('userAccount', {
+                  initialValue: object.userAccount
                 })(<Input placeholder='' />)
               }
             </FormItem>

@@ -59,16 +59,12 @@ class AuthList extends PureComponent {
      */
     columns: [
       {
-        title: '${column.comment}',
+        title: '资源名称',
         dataIndex: 'authName'
       },
       {
         title: '权限URL(移动端特指页面)',
         dataIndex: 'authUrl'
-      },
-      {
-        title: '父级节点',
-        dataIndex: 'parentId'
       },
       {
         title: '权限类型',
@@ -92,8 +88,6 @@ class AuthList extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.previewItem(record.authId)}>配置</a>
-              <Divider type="vertical" />
-              <a href="">订阅警报</a>
             </Fragment>
           )
         },
@@ -137,7 +131,9 @@ class AuthList extends PureComponent {
       }
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      const object = {};
+      object[sorter.field] = sorter.order;
+      params.pager.sorter = [object];
     }
 
     // 动态生成
@@ -204,7 +200,7 @@ class AuthList extends PureComponent {
         dispatch({
           type: '_auth/remove',
           payload: {
-            authIds: selectedRows.map(row => row.authId).join(","),
+            authIds: selectedRows.map(row => row.authId).join(','),
           },
           callback: () => {
             dispatch({
@@ -275,7 +271,7 @@ class AuthList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="资源名称">
               {getFieldDecorator('authName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>          
@@ -311,7 +307,7 @@ class AuthList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="${column.comment}">
+            <FormItem label="资源名称">
               {getFieldDecorator('authName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>       

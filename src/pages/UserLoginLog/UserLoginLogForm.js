@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment'
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -16,6 +18,9 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectDictionary from "../Dictionary/SelectDictionary";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -68,32 +73,48 @@ class UserLoginLogForm extends PureComponent {
       case "update":
         type = '_userLoginLog/update';
         break;
+      default:
     }
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+	    // 预处理提交数据:主要是为了处理时间问题
+        for (const key in values) {
+            if ( values[key] && values[key].format) {
+                values[key] = values[key] - 0;
+            }
+        }
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update'
+            })
           }
         });
       }
     });
   };
 
+  /**
+   * 返回上一页
+   */
+  handleNavigateBack = () => {
+    router.goBack();
+  };
+
 
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
-      submitting
-      , _userLoginLog: {
+      _userLoginLog: {
         object = {}
       }
     } = this.props;
     const {
+      submitting,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
@@ -120,13 +141,11 @@ class UserLoginLogForm extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem>
-              {
-                getFieldDecorator('loginLogId', {
-                  initialValue: object.loginLogId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldDecorator('loginLogId', {
+                initialValue: object.loginLogId
+              })(<Input type='hidden' placeholder='' />)
+            }
             <FormItem {...formItemLayout} label='登录账号'>
               {
                 getFieldDecorator('userAccount', {
@@ -134,18 +153,16 @@ class UserLoginLogForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem>
-              {
-                getFieldDecorator('sessionId', {
-                  initialValue: object.sessionId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldDecorator('sessionId', {
+                initialValue: object.sessionId
+              })(<Input type='hidden' placeholder='' />)
+            }
             <FormItem {...formItemLayout} label='退出时间'>
               {
                 getFieldDecorator('logoutTime', {
-                  initialValue: object.logoutTime
-                })(<Input placeholder='' />)
+                  initialValue: moment(object.logoutTime)
+                })(<DatePicker placeholder='' />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='IP地址'>
@@ -155,7 +172,7 @@ class UserLoginLogForm extends PureComponent {
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='${column.comment}'>
+            <FormItem {...formItemLayout} label='令牌'>
               {
                 getFieldDecorator('token', {
                   initialValue: object.token
@@ -168,8 +185,8 @@ class UserLoginLogForm extends PureComponent {
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit} loading={submitting}>
             <FormattedMessage id="form.submit" />
           </Button>
-          <Button style={{ marginLeft: 8 }}>
-            <FormattedMessage id="form.save" />
+          <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.handleNavigateBack}>
+            返回
           </Button>
         </FooterToolbar>
       </PageHeaderWrapper>

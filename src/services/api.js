@@ -109,7 +109,7 @@ export async function updateFakeList(params) {
  * @returns {Promise<Object>}
  */
 export async function accountLogin(params) {
-  return request('/rest/queryOrgService/login', {
+  return request('/rest/adminUserService/login', {
     method: 'POST',
     body: params,
   });

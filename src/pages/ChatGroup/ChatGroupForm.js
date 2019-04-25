@@ -159,11 +159,12 @@ class ChatGroupForm extends PureComponent {
             <FormItem {...formItemLayout} label='群组名称'>
               {
                 getFieldDecorator('name', {
-                  initialValue: object.name
+                  initialValue: object.name,
+                  rules: [{required: true, message: "必填项"}]
                 })(<Input placeholder='' />)
               }
             </FormItem>
-            <FormItem {...formItemLayout} label='${column.comment}'>
+            <FormItem {...formItemLayout} label='群头像'>
               {
                 getFieldDecorator('avatar', {
                   initialValue: object.avatar

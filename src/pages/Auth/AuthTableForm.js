@@ -6,21 +6,20 @@ import PropTypes from 'prop-types'
 import styles from '../../style.less';
 import {generateDynamicElement} from "../../utils/utils";
 import SelectEntityModal from "../../components/SelectEntityModal";
+import SelectAuth from "./SelectAuth";
 import SelectOrganization from "../Organization/SelectOrganization";
 
-
-@connect(({ _userOrg, loading }) => {
+@connect(({ _auth, loading }) => {
   return {
-    _userOrg,
-    loading: loading.models._userOrg,
+    _auth,
+    loading: loading.models._auth,
   };
 })
-class UserOrgTableForm extends PureComponent {
-
+class AuthTableForm extends PureComponent {
   index = 0;
 
   cacheOriginData = {};
-
+  
   refreshData = false;
 
   constructor(props) {
@@ -34,7 +33,6 @@ class UserOrgTableForm extends PureComponent {
     props.triggerRef(this)
   }
 
-
   // 接收主表传递过来的参数，用参数名param接收
   // 进而影响子表查询
   componentDidMount() {
@@ -44,38 +42,33 @@ class UserOrgTableForm extends PureComponent {
     }
 
     dispatch({
-      type: '_userOrg/fetch',
+      type: '_auth/fetch',
       payload: {
         pager: {
           param
         }
-      },
-      callback: () => {
-        this.refreshData = true;
       }
     });
     this.setState({
       loading: true,
-    });
+    })
+    this.refreshData = true;
   }
 
   componentWillReceiveProps(nextProps) {
-    let userOrgs = null;
+    let auths = null;
     const {data} = this.state;
-
-    if (this.refreshData) {
+    if (this.refreshData && nextProps._auth.data.list.length !== 0) {
       this.refreshData = false;
-      userOrgs = [...nextProps._userOrg.data.list];
-      console.log(userOrgs);
+      auths = [...nextProps._userOrg.data.list];
       setTimeout(() => {
         this.setState({
-          data: userOrgs,
+          data: auths,
           loading: false
         });
       }, 500)
     }
   }
-
 
   getRowByKey(key, newData) {
     const { data } = this.state;
@@ -105,12 +98,12 @@ class UserOrgTableForm extends PureComponent {
           break;
         default:
       }
-    });
+    })
     this.setState({
       loading: true
     });
     dispatch({
-      type:'_userOrg/edit',
+      type: '_auth/edit',
       payload: {
         inputBean: {
           insert,
@@ -120,7 +113,7 @@ class UserOrgTableForm extends PureComponent {
       },
       callback: () => {
         dispatch({
-          type: '_userOrg/fetch',
+          type: '_auth/fetch',
           payload: {
             pager: {
               param
@@ -130,7 +123,7 @@ class UserOrgTableForm extends PureComponent {
         this.refreshData = true;
       }
     })
-  };
+  }
 
   toggleEditable = (e, key) => {
     e.preventDefault();
@@ -162,10 +155,108 @@ class UserOrgTableForm extends PureComponent {
     }
   };
 
+  newAuth = () => {
+    const { data } = this.state;
+    const newData = data.map(item => ({ ...item }));
+    newData.push({
+      key: `NEW_TEMP_ID_${this.index}`,
+      authName: '',
+      authUrl: '',
+      parentId: '',
+      authType: '',
+      apiUrl: '',
+      leaf: '',
+      available: '',
+      editable: true,
+      isNew: true,
+      beanStatus: "insert"
+    });
+    this.index += 1;
+    this.setState({ data: newData });
+  };
+
+  remove(key) {
+    const { data } = this.state;
+    const newData = data.filter(item => item.key !== key);
+    newData.push({
+      key,
+      authId: key,
+      beanStatus: 'delete'
+      ,
+    });
+    this.setState({ data: newData });
+  }
+
+  handleKeyPress(e, key) {
+    if (e.key === 'Enter') {
+      this.saveRow(e, key);
+    }
+  }
+
+  handleFieldChange(e, fieldName, key) {
+    const { data } = this.state;
+    const newData = data.map(item => ({ ...item }));
+    const target = this.getRowByKey(key, newData);
+    if (target) {
+      target[fieldName] = e.target.value;
+      this.setState({ data: newData });
+    }
+  }
+
+  saveRow(e, key) {
+    e.persist();
+    this.setState({
+      loading: true,
+    });
+    setTimeout(() => {
+      if (this.clickedCancel) {
+        this.clickedCancel = false;
+        return;
+      }
+      const target = this.getRowByKey(key) || {};
+      if (
+      !target.authName ||
+      !target.authUrl ||
+      !target.parentId ||
+      !target.authType ||
+      !target.apiUrl ||
+      !target.leaf ||
+      !target.available      ) {
+        message.error('请填写完整信息。');
+        e.target.focus();
+        this.setState({
+          loading: false,
+        });
+        return;
+      }
+      delete target.isNew;
+      this.toggleEditable(e, key);
+      const { data } = this.state;
+      this.setState({
+        loading: false,
+      });
+    }, 500);
+  }
+
+  cancel(e, key) {
+    this.clickedCancel = true;
+    e.preventDefault();
+    const { data } = this.state;
+    const newData = data.map(item => ({ ...item }));
+    const target = this.getRowByKey(key, newData);
+    if (this.cacheOriginData[key]) {
+      Object.assign(target, this.cacheOriginData[key]);
+      delete this.cacheOriginData[key];
+    }
+    target.editable = false;
+    this.setState({ data: newData });
+    this.clickedCancel = false;
+  }
+
   /**
-   * 处理用户类型点击事件
+   * 选择系统资源
    */
-  handleOrgClick = () => {
+  handleSelectAuth = () => {
     let modal;
     const { data } = this.state;
     const {param} = this.props
@@ -201,125 +292,26 @@ class UserOrgTableForm extends PureComponent {
     };
     modal = generateDynamicElement(
       <SelectEntityModal handleOk={handleModalOk}>
-        <SelectOrganization />
+        <SelectAuth />
       </SelectEntityModal>
     );
   };
 
-  newUserOrg = () => {
-    const { data } = this.state;
-    const newData = data.map(item => ({ ...item }));
-    newData.push({
-      key: `NEW_TEMP_ID_${this.index}`,
-      userId: '',
-      orgId: '',
-      userName: '',
-      roleId: '',
-      parentOrgId: '',
-      orgType: '',
-      grade: '',
-      orgName: '',
-      userImageUrl: '',
-      shortName: '',
-      editable: true,
-      isNew: true,
-      beanStatus: "insert"
-    });
-    this.index += 1;
-    this.setState({ data: newData });
-  };
-
-  remove(key) {
-    const { data } = this.state;
-    const newData = data.filter(item => item.key !== key);
-    newData.push({
-      key,
-      userOrgId: key,
-      beanStatus: 'delete'
-      ,
-    });
-    this.setState({ data: newData });
-
-  }
-
-  handleKeyPress(e, key) {
-    if (e.key === 'Enter') {
-      this.saveRow(e, key);
-    }
-  }
-
-  handleFieldChange(e, fieldName, key) {
-    const { data } = this.state;
-    const newData = data.map(item => ({ ...item }));
-    const target = this.getRowByKey(key, newData);
-    if (target) {
-      target[fieldName] = e.target.value;
-      this.setState({ data: newData });
-    }
-  }
-
-  saveRow(e, key) {
-    e.persist();
-    this.setState({
-      loading: true,
-    });
-    setTimeout(() => {
-      if (this.clickedCancel) {
-        this.clickedCancel = false;
-        return;
-      }
-      const target = this.getRowByKey(key) || {};
-      if (
-      !target.userName ||
-      !target.orgType ||
-      !target.orgName ||
-      !target.shortName      ) {
-        message.error('请填写完整信息。');
-        e.target.focus();
-        this.setState({
-          loading: false,
-        });
-        return;
-      }
-      delete target.isNew;
-      this.toggleEditable(e, key);
-      const { data } = this.state;
-      this.setState({
-        loading: false,
-      });
-    }, 500);
-  }
-
-  cancel(e, key) {
-    this.clickedCancel = true;
-    e.preventDefault();
-    const { data } = this.state;
-    const newData = data.map(item => ({ ...item }));
-    const target = this.getRowByKey(key, newData);
-    if (this.cacheOriginData[key]) {
-      Object.assign(target, this.cacheOriginData[key]);
-      delete this.cacheOriginData[key];
-    }
-    target.editable = false;
-    this.setState({ data: newData });
-    this.clickedCancel = false;
-  }
-
   render() {
     const columns = [
       {
-        title: '用户名称',
-        dataIndex: 'userName',
-        key: 'userName',
+        title: '资源名称',
+        dataIndex: 'authName',
+        key: 'authName',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'userName', record.key)}
+                onChange={e => this.handleFieldChange(e, 'authName', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="用户名称"
+                placeholder="资源名称"
               />
             );
           }
@@ -327,18 +319,18 @@ class UserOrgTableForm extends PureComponent {
         },
       },
       {
-        title: '组织类型',
-        dataIndex: 'orgType',
-        key: 'orgType',
+        title: '权限URL(移动端特指页面)',
+        dataIndex: 'authUrl',
+        key: 'authUrl',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'orgType', record.key)}
+                onChange={e => this.handleFieldChange(e, 'authUrl', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="组织类型"
+                placeholder="权限URL(移动端特指页面)"
               />
             );
           }
@@ -346,18 +338,18 @@ class UserOrgTableForm extends PureComponent {
         },
       },
       {
-        title: '年级',
-        dataIndex: 'grade',
-        key: 'grade',
+        title: '权限类型',
+        dataIndex: 'authType',
+        key: 'authType',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'grade', record.key)}
+                onChange={e => this.handleFieldChange(e, 'authType', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="年级（在org_type为class类型是不能为空）"
+                placeholder="权限类型"
               />
             );
           }
@@ -365,18 +357,18 @@ class UserOrgTableForm extends PureComponent {
         },
       },
       {
-        title: '组织名称',
-        dataIndex: 'orgName',
-        key: 'orgName',
+        title: '服务端的API服务权限',
+        dataIndex: 'apiUrl',
+        key: 'apiUrl',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'orgName', record.key)}
+                onChange={e => this.handleFieldChange(e, 'apiUrl', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="组织名称"
+                placeholder="服务端的API服务权限"
               />
             );
           }
@@ -384,18 +376,37 @@ class UserOrgTableForm extends PureComponent {
         },
       },
       {
-        title: '组织简称',
-        dataIndex: 'shortName',
-        key: 'shortName',
+        title: '是否为叶子节点',
+        dataIndex: 'leaf',
+        key: 'leaf',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Input
                 value={text}
                 autoFocus
-                onChange={e => this.handleFieldChange(e, 'shortName', record.key)}
+                onChange={e => this.handleFieldChange(e, 'leaf', record.key)}
                 onKeyPress={e => this.handleKeyPress(e, record.key)}
-                placeholder="组织简称"
+                placeholder="是否为叶子节点"
+              />
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: '是否可用',
+        dataIndex: 'available',
+        key: 'available',
+        render: (text, record) => {
+          if (record.editable) {
+            return (
+              <Input
+                value={text}
+                autoFocus
+                onChange={e => this.handleFieldChange(e, 'available', record.key)}
+                onKeyPress={e => this.handleKeyPress(e, record.key)}
+                placeholder="是否可用"
               />
             );
           }
@@ -448,20 +459,21 @@ class UserOrgTableForm extends PureComponent {
     return (
       <Fragment>
         <div className={styles.tableListOperator}>
-          <Button icon="plus" type="primary" onClick={this.handleOrgClick}>
-            选择组织
+          <Button icon="plus" type="primary" onClick={this.handleSelectAuth}>
+            选择系统资源
           </Button>
         </div>
         <Table
-          loading={loading || this.props.loading}
+          loading={loading}
           columns={columns}
           dataSource={data.filter(item => item.beanStatus !== 'delete')}
+          pagination={false}
           rowClassName={record => (record.editable ? styles.editable : '')}
         />
         <Button
           style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
           type="dashed"
-          onClick={this.newUserOrg}
+          onClick={this.newAuth}
           icon="plus"
         >
           新增
@@ -471,15 +483,14 @@ class UserOrgTableForm extends PureComponent {
   }
 }
 
-UserOrgTableForm.defaultProps = {
+AuthTableForm.defaultProps = {
   param: {},
   triggerRef: () => {}
 };
 
-UserOrgTableForm.propTypes = {
+AuthTableForm.propTypes = {
   param: PropTypes.object,
   triggerRef: PropTypes.func
 };
 
-
-export default UserOrgTableForm;
+export default AuthTableForm;

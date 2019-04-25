@@ -69,3 +69,15 @@ export async function updateFile(params = {}) {
     },
   });
 }
+
+/**
+ * 文件上传
+ * @param params
+ * @returns {Promise<void>}
+ */
+export async function uploadFile(params) {
+  return request(`/rest/fileService/upload`, {
+    method: 'POST',
+    body: params,
+  });
+}

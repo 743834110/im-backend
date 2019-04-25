@@ -18,6 +18,12 @@ import {
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
 import styles from '../../formStyle.less';
 import FooterToolbar from "../../components/FooterToolbar";
+import SelectEntityModal from "../../components/SelectEntityModal";
+import {generateDynamicElement} from "../../utils/utils";
+import SelectDictionary from "../Dictionary/SelectDictionary";
+import SelectDictionaryType from "../Dictionary/DictionaryForm";
+import SelectUser from "../User/SelectUser";
+import SelectChatGroup from "../ChatGroup/SelectChatGroup";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -70,6 +76,7 @@ class WorkGroupMemberForm extends PureComponent {
       case "update":
         type = '_workGroupMember/update';
         break;
+      default:
     }
 
     form.validateFieldsAndScroll((err, values) => {
@@ -83,8 +90,10 @@ class WorkGroupMemberForm extends PureComponent {
         dispatch({
           type,
           payload: values,
-          callback(transaction) {
-
+          callback: () => {
+            this.setState({
+              beanStatus: 'update'
+            })
           }
         });
       }
@@ -98,16 +107,67 @@ class WorkGroupMemberForm extends PureComponent {
     router.goBack();
   };
 
+  handleUserAccountClick = () => {
+    let modal;
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    /**
+     * 数据回调，设置表单的值
+     * @param res
+     */
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      const {form: {setFieldsValue}} = this.props;
+      setFieldsValue({
+        ...res[0]
+      });
+    };
+    const userId = getFieldValue("userId");
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{userId}}>
+        <SelectUser/>
+      </SelectEntityModal>
+    );
+  };
+
+  handleChatGroupIdClick = () => {
+    let modal;
+    const {form: {setFieldsValue, getFieldValue}} = this.props;
+    /**
+     * 数据回调，设置表单的值
+     * @param res
+     */
+    const handleModalOk = (res) => {
+      modal.destory();
+      if (!res || res.constructor !== Array || res.length === 0) {
+        return;
+      }
+      const {form: {setFieldsValue}} = this.props;
+      setFieldsValue({
+        chatGroupId: res[0].groupId
+      });
+    };
+    const groupId = getFieldValue("chatGroupId");
+    modal = generateDynamicElement(
+      <SelectEntityModal handleOk={handleModalOk} param={{groupId}}>
+        <SelectChatGroup/>
+      </SelectEntityModal>
+    );
+  }
+
+
 
   render() {
-    let {beanStatus} = this.state;
+    const {beanStatus} = this.state;
     let {
-      submitting
-      , _workGroupMember: {
+      _workGroupMember: {
         object = {}
       }
     } = this.props;
     const {
+      submitting,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
@@ -134,39 +194,38 @@ class WorkGroupMemberForm extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem>
-              {
-                getFieldDecorator('memberId', {
-                  initialValue: object.memberId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
-            <FormItem>
-              {
-                getFieldDecorator('userId', {
-                  initialValue: object.userId
-                })(<Input type='hidden' placeholder='' />)
-              }
-            </FormItem>  
+            {
+              getFieldDecorator('memberId', {
+                initialValue: object.memberId
+              })(<Input type='hidden' placeholder='' />)
+            }
+            {
+              getFieldDecorator('userId', {
+                initialValue: object.userId,
+
+              })(<Input type='hidden' placeholder='' />)
+            }
             <FormItem {...formItemLayout} label='用户账号'>
               {
                 getFieldDecorator('userAccount', {
-                  initialValue: object.userAccount
-                })(<Input placeholder='' />)
+                  initialValue: object.userAccount,
+                  rules: [{required: true, message: "必选项"}]
+                })(<Input placeholder='' addonAfter={<Icon type="search" onClick={this.handleUserAccountClick} />} />)
               }
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label='群组编号'>
               {
                 getFieldDecorator('chatGroupId', {
-                  initialValue: object.chatGroupId
-                })(<Input type='hidden' placeholder='' />)
+                  initialValue: object.chatGroupId,
+                  rules: [{required: true, message: "必选项"}]
+                })(<Input placeholder='' addonAfter={<Icon type='search' onClick={this.handleChatGroupIdClick} />}  />)
               }
-            </FormItem>  
+            </FormItem>
             <FormItem {...formItemLayout} label='用户名称'>
               {
                 getFieldDecorator('userName', {
                   initialValue: object.userName
-                })(<Input placeholder='' />)
+                })(<Input placeholder=''  />)
               }
             </FormItem>
             <FormItem {...formItemLayout} label='头像地址'>

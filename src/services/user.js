@@ -6,7 +6,7 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  return request('/api/currentUser');
+  return request('/rest/adminUserService/getCurrentUser');
 }
 
 export async function queryById(params) {

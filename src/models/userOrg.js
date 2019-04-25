@@ -1,9 +1,9 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { queryRole, removeRole, addRole, updateRole, queryById } from '../../../services/role';
+import { queryUserOrg, removeUserOrg, addUserOrg, updateUserOrg, queryById, editUserOrg } from '../services/userOrg';
 
 export default {
-  namespace: '_role',
+  namespace: '_userOrg',
 
   state: {
     // 列表
@@ -17,12 +17,15 @@ export default {
 
   effects: {
     // 批量提取
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRole, payload);
+    *fetch({ payload, callback }, { call, put }) {
+      const response = yield call(queryUserOrg, payload);
       yield put({
         type: 'saveList',
         payload: response,
       });
+      if (callback) {
+        callback();
+      }
     },
     // 提取一项
     *fetchOne({ payload }, { call, put }) {
@@ -34,9 +37,9 @@ export default {
     },
 
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRole, payload);
+      const response = yield call(addUserOrg, payload);
       yield put({
-        type: 'saveList',
+        type: 'saveObject',
         payload: response,
       });
       if (response.status >= 200 && response.status < 300) {
@@ -45,7 +48,7 @@ export default {
       }
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRole, payload);
+      const response = yield call(removeUserOrg, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -55,7 +58,7 @@ export default {
       }
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRole, payload);
+      const response = yield call(updateUserOrg, payload);
       yield put({
         type: 'saveList',
         payload: response,
@@ -64,6 +67,15 @@ export default {
         message.success("完成更新");
         if (callback) callback();
       }
+    },
+    
+    // 暂不将数据更新到state当中，由页面进行数据的刷新
+    *edit({ payload, callback }, { call, put }) {
+      const response = yield call(editUserOrg, payload);
+      if (response.status >= 200 && response.status < 300) {
+        message.success("子表完成更新");
+        if (callback) callback(response);
+      } 
     }
   },
 
@@ -78,7 +90,7 @@ export default {
     saveList(state, action) {
       // 此处添加key是用于table内部优化处理
       const list = action.payload.data.result.map(value => ({
-        key: value.roleId,
+        key: value.userOrgId,
         ...value
       }))
       const data = {

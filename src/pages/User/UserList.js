@@ -14,9 +14,6 @@ import {
   Button,
   Dropdown,
   Menu,
-  InputNumber,
-  DatePicker,
-  Divider
 } from 'antd';
 import StandardTable from '../../components/StandardTable';
 import PageHeaderWrapper from '../../components/PageHeaderWrapper';
@@ -67,46 +64,10 @@ class UserList extends PureComponent {
         dataIndex: 'userName'
       },
       {
-        title: '初始密码更改日期',
-        dataIndex: 'userPasswordChanged',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '是否有效',
-        dataIndex: 'valid'
-      },
-      {
-        title: '启用日期',
-        dataIndex: 'userEnabledDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '失效日期',
-        dataIndex: 'userDisabledDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '账号是否锁定',
-        dataIndex: 'userAccountLocked'
-      },
-      {
-        title: '最后登录时间',
-        dataIndex: 'lastLoginDate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
         title: '创建时间',
         dataIndex: 'createTime',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>
-      },
-      {
-        title: '创建人',
-        dataIndex: 'createPerson'
       },
       {
         title: '修改时间',
@@ -117,11 +78,6 @@ class UserList extends PureComponent {
       {
         title: '用户类型',
         dataIndex: 'userType'
-      },
-
-      {
-        title: '校园短号',
-        dataIndex: 'userShortMobile'
       },
       {
         title: '操作',
